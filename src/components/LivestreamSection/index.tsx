@@ -34,24 +34,22 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
   if (livestream) {
     return (
       <View>
-        {!livestream.isLive &&
-          livestream.status === Amity.StreamStatus.ENDED && (
-            <View key={livestream.streamId} style={styles.streamEndedContainer}>
-              <Text style={styles.streamEndedTitle}>
-                This livestream has ended.
-              </Text>
-              <Text style={styles.streamEndedDescription}>
-                {'Playback will be available for you \nto watch shortly.'}
-              </Text>
-            </View>
-          )}
+        {!livestream.isLive && livestream.status === 'ended' && (
+          <View key={livestream.streamId} style={styles.streamEndedContainer}>
+            <Text style={styles.streamEndedTitle}>
+              This livestream has ended.
+            </Text>
+            <Text style={styles.streamEndedDescription}>
+              {'Playback will be available for you \nto watch shortly.'}
+            </Text>
+          </View>
+        )}
 
-        {!livestream.isLive &&
-          livestream.status === Amity.StreamStatus.RECORDED && (
-            <View>
-              <Text>Recorded Livestream</Text>
-            </View>
-          )}
+        {!livestream.isLive && livestream.status === 'recorded' && (
+          <View>
+            <Text>Recorded Livestream</Text>
+          </View>
+        )}
 
         {livestream.isLive && (
           <View>
