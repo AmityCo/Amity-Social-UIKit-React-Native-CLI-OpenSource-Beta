@@ -6,8 +6,9 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import useAuth from '../../../src/hooks/useAuth';
 import { RootStackParamList } from '../../../src/routes/RouteParamList';
-import { playBtn } from '../../../src/svg/svg-xml-list';
 import { SvgXml } from 'react-native-svg';
+import { playBtn } from '../../../src/svg/svg-xml-list';
+import { exclamationIcon } from '../../../src/svg/svg-xml-list';
 import Video from 'react-native-video';
 
 interface ILivestreamSection {
@@ -86,12 +87,21 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
   if (livestream) {
     return (
       <View>
+        {!livestream.isLive && livestream.status === 'idle' && (
+          <View key={livestream.streamId} style={styles.streamEndedContainer}>
+            <SvgXml xml={exclamationIcon('#FFFFFF')} width="28" height="28" />
+            <Text style={styles.streamNotAvailableDescription}>
+              {'This stream is currently \nunavailable'}
+            </Text>
+          </View>
+        )}
+
         {!livestream.isLive && livestream.status === 'ended' && (
           <View key={livestream.streamId} style={styles.streamEndedContainer}>
-            <Text style={styles.streamEndedTitle}>
+            <Text style={styles.streamNotAvailableTitle}>
               This livestream has ended.
             </Text>
-            <Text style={styles.streamEndedDescription}>
+            <Text style={styles.streamNotAvailableDescription}>
               {'Playback will be available for you \nto watch shortly.'}
             </Text>
           </View>

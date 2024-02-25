@@ -31,7 +31,7 @@ export const useStyles = () => {
       lineHeight: 22,
       fontWeight: '600',
     },
-    streamEndedDescription: {
+    streamNotAvailableDescription: {
       color: '#FFFFFF',
       fontSize: 15,
       lineHeight: 20,
