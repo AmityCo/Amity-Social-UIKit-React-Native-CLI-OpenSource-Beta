@@ -75,7 +75,7 @@ export default function CategoryList({ navigation }: any) {
               ? {
                   uri: `https://api.${apiRegion}.amity.co/api/v3/files/${item.avatarFileId}/download`,
                 }
-              : require('../../../assets/icon/Placeholder.png')
+              : require('../../../assets/images/default-livestream-thumbnail.png')
           }
         />
         <Text style={styles.categoryText}>{item.name}</Text>
