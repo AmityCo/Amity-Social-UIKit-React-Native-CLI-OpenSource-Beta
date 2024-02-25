@@ -25,7 +25,7 @@ export const useStyles = () => {
       justifyContent: 'center',
       alignItems: 'center',
     },
-    streamEndedTitle: {
+    streamNotAvailableTitle: {
       color: '#FFFFFF',
       fontSize: 17,
       lineHeight: 22,
