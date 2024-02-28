@@ -36,6 +36,7 @@ import VideoPlayerFull from '../screens/VideoPlayerFullScreen';
 import PostTypeChoiceModal from '../components/PostTypeChoiceModal/PostTypeChoiceModal';
 import CreatePoll from '../screens/CreatePoll/CreatePoll';
 import ReactionListScreen from '../screens/ReactionListScreen/ReactionListScreen';
+import CreateLivestream from '../screens/CreateLivestream';
 
 export default function SocialNavigator() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -171,6 +172,11 @@ export default function SocialNavigator() {
           <Stack.Screen
             name="CreatePoll"
             component={CreatePoll}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CreateLivestream"
+            component={CreateLivestream}
             options={{ headerShown: false }}
           />
           <Stack.Screen

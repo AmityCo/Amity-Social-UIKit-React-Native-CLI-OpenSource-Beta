@@ -125,6 +125,7 @@ const CreatePostChooseTargetModal = ({
     const targetscreen = () => {
       if (postType === 'post') return 'CreatePost';
       if (postType === 'poll') return 'CreatePoll';
+      if (postType === 'livestream') return 'CreateLivestream';
       return null;
     };
     navigation.navigate(targetscreen(), {
