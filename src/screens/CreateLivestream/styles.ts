@@ -1,20 +1,37 @@
 import { StyleSheet } from 'react-native';
-import { useTheme } from 'react-native-paper';
-import type { MyMD3Theme } from 'src/providers/amity-ui-kit-provider';
 
 export const useStyles = () => {
-  const theme = useTheme() as MyMD3Theme;
-
   const styles = StyleSheet.create({
     container: {
       height: '100%',
       backgroundColor: '#000000',
     },
     cameraContainer: {
+      marginTop: '15%',
+      height: '80%',
+    },
+    livestreamView: {
       flex: 1,
+    },
+    streamingWrap: {
+      flex: 1,
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+    },
+    streamingTimer: {
+      backgroundColor: '#FF305A',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+    },
+    idleWrap: {
+      flex: 1,
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-    cameraInnerContainer: {
+    idleWraplInner: {
       padding: 16,
     },
     optionTopWrap: {
@@ -28,7 +45,16 @@ export const useStyles = () => {
       gap: 10,
     },
     optionIcon: {
+      flexDirection: 'row',
       borderRadius: 50,
+      backgroundColor: 'rgba(0, 0, 0, 0.2)',
+      width: 32,
+      height: 32,
+    },
+    optionIconInner: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     postTarget: {
       marginTop: 36,
@@ -46,6 +72,12 @@ export const useStyles = () => {
       fontSize: 15,
       fontWeight: '600',
       lineHeight: 20,
+    },
+    seperator: {
+      width: '100%',
+      height: 1,
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      marginTop: 16,
     },
     detailWrap: {
       marginTop: 28,
@@ -67,7 +99,29 @@ export const useStyles = () => {
       backgroundColor: '#000000',
       height: '10%',
     },
-    footerButton: {
+    streamingFooter: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: 16,
+    },
+    finishButton: {
+      backgroundColor: 'transparent',
+      borderColor: '#FFFFFF',
+      borderWidth: 1,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    finishButtonText: {
+      fontSize: 15,
+      lineHeight: 20,
+      fontWeight: '600',
+      color: '#FFFFFF',
+    },
+    goLiveButton: {
+      marginTop: 15,
       backgroundColor: '#FFFFFF',
       borderColor: '#A5A9B5',
       borderRadius: 4,
@@ -78,7 +132,7 @@ export const useStyles = () => {
       justifyContent: 'center',
       alignItems: 'center',
     },
-    footerButtonText: {
+    goLiveButtonText: {
       fontSize: 15,
       lineHeight: 20,
       fontWeight: '600',
