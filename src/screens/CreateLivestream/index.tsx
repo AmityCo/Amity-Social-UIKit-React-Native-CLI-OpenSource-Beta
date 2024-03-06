@@ -19,6 +19,10 @@ const CreateLivestream = ({ navigation, route }) => {
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const [time, setTime] = useState<number>(0);
 
+  const [cameraPosition, setCameraPosition] = useState<'front' | 'back'>(
+    'back'
+  );
+
   const ref = useRef(null);
 
   const renderOptionIcon = (icon: string, onClick: () => void) => {
@@ -60,6 +64,14 @@ const CreateLivestream = ({ navigation, route }) => {
     }
   }, [newStream, timer]);
 
+  const onSwitchCamera = () => {
+    if (cameraPosition === 'back') {
+      setCameraPosition('front');
+    } else {
+      setCameraPosition('back');
+    }
+  };
+
   const calculateTime = () => {
     const minutes = Math.floor(time / 60000);
     const seconds = ((time % 60000) / 1000).toFixed(0);
@@ -68,7 +80,7 @@ const CreateLivestream = ({ navigation, route }) => {
 
   useEffect(() => {
     const createStreamPost = async (streamId: Amity.Stream['streamId']) => {
-      await PostRepository.createPost({
+      const post = await PostRepository.createPost({
         targetId,
         targetType,
         dataType: 'liveStream',
@@ -76,6 +88,8 @@ const CreateLivestream = ({ navigation, route }) => {
           streamId,
         },
       });
+
+      console.log('stream post', streamId, post);
     };
     if (newStream) {
       try {
@@ -97,7 +111,7 @@ const CreateLivestream = ({ navigation, route }) => {
         <LiveStreamView
           style={styles.livestreamView}
           ref={ref}
-          camera="back"
+          camera={cameraPosition}
           enablePinchedZoom={true}
           video={{
             fps: 30,
@@ -128,7 +142,7 @@ const CreateLivestream = ({ navigation, route }) => {
                   navigation.goBack()
                 )}
                 <View style={styles.optionTopRightWrap}>
-                  {renderOptionIcon(syncIcon('white'), () => {})}
+                  {renderOptionIcon(syncIcon('white'), onSwitchCamera)}
                   {renderOptionIcon(editThumbnailIcon('white'), () => {})}
                 </View>
               </View>
@@ -168,9 +182,9 @@ const CreateLivestream = ({ navigation, route }) => {
       </View>
 
       <View style={styles.footer}>
-        {!isLive ? (
+        {isLive ? (
           <View style={styles.streamingFooter}>
-            {renderOptionIcon(syncIcon('white'), () => {})}
+            {renderOptionIcon(syncIcon('white'), onSwitchCamera)}
             <TouchableOpacity
               style={styles.finishButton}
               onPress={onStopStream}
