@@ -19,10 +19,24 @@ export const useStyles = () => {
       width: '100%',
       height: '100%',
     },
-    streamingTimer: {
+    streamingTimerWrap: {
+      alignSelf: 'center',
       backgroundColor: '#FF305A',
       paddingHorizontal: 8,
       paddingVertical: 4,
+      borderRadius: 4,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      top: 20,
+      left: 16,
+    },
+    streamingTimer: {
+      color: '#FFFFFF',
+      fontSize: 13,
+      fontWeight: '600',
+      lineHeight: 18,
     },
     idleWrap: {
       flex: 1,
@@ -55,6 +69,13 @@ export const useStyles = () => {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    thumbnailImage: {
+      width: 56,
+      height: 32,
+      borderRadius: 4,
+      borderWidth: 1,
+      borderColor: '#FFFFFF',
     },
     postTarget: {
       marginTop: 36,
@@ -113,6 +134,9 @@ export const useStyles = () => {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
+      borderRadius: 4,
+      width: 75,
+      height: 40,
     },
     finishButtonText: {
       fontSize: 15,
@@ -137,6 +161,27 @@ export const useStyles = () => {
       lineHeight: 20,
       fontWeight: '600',
       color: '#292B32',
+    },
+    actionSheetButton: {
+      padding: 16,
+    },
+    actionSheetContainer: {
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      paddingTop: 16,
+      paddingBottom: 20,
+    },
+    actionSheetButtonNormalText: {
+      color: '#292B32',
+      fontSize: 16,
+      fontWeight: '600',
+      lineHeight: 20,
+    },
+    actionSheetButtonDeleteText: {
+      color: '#FA4D30',
+      fontSize: 16,
+      fontWeight: '600',
+      lineHeight: 20,
     },
   });
 
