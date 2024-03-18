@@ -4873,6 +4873,11 @@ react-native-image-picker@^7.0.0:
   resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-7.1.0.tgz#1a41cc45ccdc177c2ebf7c7accee0ceadc36abd8"
   integrity sha512-An0hn2mwqjGAA2mbsXdHRTyoMMklGPT9stIjE2zvkegU7CdoFhowqvVHfnELJNZnfAiSQuIaeY//z0r1R0lsgw==
 
+react-native-nodemediaclient@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/react-native-nodemediaclient/-/react-native-nodemediaclient-0.3.3.tgz#99168049816c62736de8c4fc7e112ca40ea64ebe"
+  integrity sha512-xyy5G3ueCAVO563IYGVHCS8cX9P+GSdSWyrejAEPSzePeVfc6V/+zrfbkEiqMqUw4ru1vSvbG4cgapwhE8LtSw==
+
 react-native-safe-area-context@^4.7.2, react-native-safe-area-context@^4.8.2:
   version "4.9.0"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.9.0.tgz#21a570ca3594cb4259ba65f93befaa60d91bcbd0"

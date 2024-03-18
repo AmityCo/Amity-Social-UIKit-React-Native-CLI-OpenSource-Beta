@@ -8,7 +8,7 @@ import { StreamRepository, PostRepository } from '@amityco/ts-sdk-react-native';
 import ActionSheet, { ActionSheetRef } from 'react-native-actions-sheet';
 import useImagePicker from '../../../src/hooks/useImagePicker';
 
-import { LiveStreamView } from '@api.video/react-native-livestream';
+import { NodePublisher } from 'react-native-nodemediaclient';
 import { uploadImageFile } from '../../../src/providers/file-provider';
 
 const CreateLivestream = ({ navigation, route }) => {
@@ -72,13 +72,13 @@ const CreateLivestream = ({ navigation, route }) => {
     }
   }, [title, description, imageUri, fileId, uploadFile]);
 
-  const onStreamConnectionSuccess = () => {
-    setIsConnecting(false);
-    const intervalId = setInterval(() => {
-      setTime((prev) => prev + 1000);
-    }, 1000);
-    setTimer(intervalId);
-  };
+  // const onStreamConnectionSuccess = () => {
+  //   setIsConnecting(false);
+  //   const intervalId = setInterval(() => {
+  //     setTime((prev) => prev + 1000);
+  //   }, 1000);
+  //   setTimer(intervalId);
+  // };
 
   const onStopStream = useCallback(async () => {
     if (newStream) {
@@ -128,9 +128,12 @@ const CreateLivestream = ({ navigation, route }) => {
     if (newStream) {
       try {
         const streamId = newStream.streamId;
-        const [url, query] = newStream.streamerUrl.url.split(`/${streamId}`);
+        console.log('streamId', streamId);
+        // const [url, query] = newStream.streamerUrl.url.split(`/${streamId}`);
 
-        ref?.current.startStreaming(streamId + query, url);
+        // ref?.current.startStreaming(streamId + query, url);
+
+        ref?.current.start();
 
         createStreamPost(streamId);
       } catch (e) {
@@ -147,7 +150,34 @@ const CreateLivestream = ({ navigation, route }) => {
     <>
       <View style={styles.container}>
         <View style={styles.cameraContainer}>
-          <LiveStreamView
+          <NodePublisher
+            ref={ref}
+            style={{ flex: 1 }}
+            url={newStream?.streamerUrl?.url || ''}
+            audioParam={{
+              codecid: NodePublisher.NMC_CODEC_ID_AAC,
+              profile: NodePublisher.NMC_PROFILE_AUTO,
+              samplerate: 48000,
+              channels: 1,
+              bitrate: 64 * 1000,
+            }}
+            videoParam={{
+              codecid: NodePublisher.NMC_CODEC_ID_H264,
+              profile: NodePublisher.NMC_PROFILE_AUTO,
+              width: 720,
+              height: 1280,
+              fps: 30,
+              bitrate: 2000 * 1000,
+            }}
+            frontCamera={cameraPosition}
+            HWAccelEnable={true}
+            denoiseEnable={true}
+            torchEnable={false}
+            keyFrameInterval={2}
+            volume={1.0}
+            videoOrientation={NodePublisher.VIDEO_ORIENTATION_PORTRAIT}
+          />
+          {/* <LiveStreamView
             style={styles.livestreamView}
             ref={ref}
             camera={cameraPosition}
@@ -171,8 +201,7 @@ const CreateLivestream = ({ navigation, route }) => {
             onDisconnect={() => {
               console.log('disConnected');
             }}
-          />
-
+          /> */}
           {isLive ? (
             <View style={styles.streamingWrap}>
               <View style={styles.streamingTimerWrap}>

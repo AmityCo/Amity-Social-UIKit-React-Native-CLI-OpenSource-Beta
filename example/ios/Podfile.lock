@@ -83,6 +83,7 @@ PODS:
   - hermes-engine/Pre-built (0.72.4)
   - libevent (2.1.12)
   - Logboard (2.3.1)
+  - NodeMediaClient (3.2.7)
   - OpenSSL-Universal (1.1.1100)
   - PromisesObjC (2.3.1)
   - PromisesSwift (2.3.1):
@@ -397,6 +398,10 @@ PODS:
     - React-Core
   - react-native-netinfo (11.3.1):
     - React-Core
+  - react-native-nodemediaclient (0.3.3):
+    - NodeMediaClient (= 3.2.7)
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
   - react-native-safe-area-context (4.9.0):
     - React-Core
   - react-native-video (6.0.0-beta.5):
@@ -585,6 +590,7 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-live-stream (from `../node_modules/@api.video/react-native-livestream`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-nodemediaclient (from `../node_modules/react-native-nodemediaclient`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -628,6 +634,7 @@ SPEC REPOS:
     - HaishinKit
     - libevent
     - Logboard
+    - NodeMediaClient
     - OpenSSL-Universal
     - PromisesObjC
     - PromisesSwift
@@ -689,6 +696,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@api.video/react-native-livestream"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-nodemediaclient:
+    :path: "../node_modules/react-native-nodemediaclient"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-video:
@@ -761,6 +770,7 @@ SPEC CHECKSUMS:
   hermes-engine: 81191603c4eaa01f5e4ae5737a9efcf64756c7b2
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   Logboard: 3d98bb85de6a36b255ab637e8178eb5671c5c3a6
+  NodeMediaClient: 2d4a5db55f079801318b769d5a9fbd01c93cd68f
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
@@ -783,6 +793,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: 5e076db26cd81660cfb6db5bcf517cfa12054d45
   react-native-live-stream: 5f45258b0c338139bd84e76e3f14c772ffb4f8c9
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
+  react-native-nodemediaclient: 0d08e4fa19a320091eca814024991cff611e6d05
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
   react-native-video: 634ca004e7747638885f40797d5e5052042483e9
   React-NativeModulesApple: edb5ace14f73f4969df6e7b1f3e41bef0012740f

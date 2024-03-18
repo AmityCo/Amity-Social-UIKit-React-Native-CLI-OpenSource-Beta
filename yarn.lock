@@ -9404,6 +9404,11 @@ react-native-modalbox@^2.0.2:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-nodemediaclient@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/react-native-nodemediaclient/-/react-native-nodemediaclient-0.3.3.tgz#99168049816c62736de8c4fc7e112ca40ea64ebe"
+  integrity sha512-xyy5G3ueCAVO563IYGVHCS8cX9P+GSdSWyrejAEPSzePeVfc6V/+zrfbkEiqMqUw4ru1vSvbG4cgapwhE8LtSw==
+
 react-native-orientation-locker@^1.5.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/react-native-orientation-locker/-/react-native-orientation-locker-1.6.0.tgz#4ea60e7cb5f2864d595a85f3b9af634c8f7c5121"
