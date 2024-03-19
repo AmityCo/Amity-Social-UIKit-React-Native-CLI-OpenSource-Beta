@@ -1,6 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Text, TextInput, Image, TouchableOpacity, View } from 'react-native';
+import {
+  Text,
+  TextInput,
+  Image,
+  TouchableOpacity,
+  View,
+  Platform,
+  PermissionsAndroid,
+} from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { closeIcon, editThumbnailIcon, syncIcon } from '../../svg/svg-xml-list';
 import { useStyles } from './styles';
@@ -25,12 +33,41 @@ const CreateLivestream = ({ navigation, route }) => {
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const [fileId, setFileId] = useState<string | null>(null);
 
-  const [cameraPosition, setCameraPosition] = useState<'front' | 'back'>(
-    'back'
-  );
+  const [frontCamera, setFrontCamera] = useState<boolean>(true);
 
   const ref = useRef(null);
   const actionSheetRef = useRef<ActionSheetRef>(null);
+
+  const requestPermission = async () => {
+    try {
+      let granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'App needs access to your camera',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        }
+      );
+
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED)
+        return console.log('Camera permission denied');
+
+      granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        {
+          title: 'Record Audio Permission',
+          message: 'App needs access to your microphone',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        }
+      );
+    } catch (err) {
+      console.warn(err);
+    }
+  };
 
   const { imageUri, removeSelectedImage, openImageGallery } = useImagePicker({
     selectionLimit: 1,
@@ -72,13 +109,13 @@ const CreateLivestream = ({ navigation, route }) => {
     }
   }, [title, description, imageUri, fileId, uploadFile]);
 
-  // const onStreamConnectionSuccess = () => {
-  //   setIsConnecting(false);
-  //   const intervalId = setInterval(() => {
-  //     setTime((prev) => prev + 1000);
-  //   }, 1000);
-  //   setTimer(intervalId);
-  // };
+  const onStreamConnectionSuccess = () => {
+    setIsConnecting(false);
+    const intervalId = setInterval(() => {
+      setTime((prev) => prev + 1000);
+    }, 1000);
+    setTimer(intervalId);
+  };
 
   const onStopStream = useCallback(async () => {
     if (newStream) {
@@ -93,11 +130,7 @@ const CreateLivestream = ({ navigation, route }) => {
   }, [newStream, timer]);
 
   const onSwitchCamera = () => {
-    if (cameraPosition === 'back') {
-      setCameraPosition('front');
-    } else {
-      setCameraPosition('back');
-    }
+    setFrontCamera((prev) => !prev);
   };
 
   const calculateTime = () => {
@@ -115,6 +148,10 @@ const CreateLivestream = ({ navigation, route }) => {
   };
 
   useEffect(() => {
+    if (Platform.OS === 'android') requestPermission();
+  }, []);
+
+  useEffect(() => {
     const createStreamPost = async (streamId: Amity.Stream['streamId']) => {
       await PostRepository.createPost({
         targetId,
@@ -129,13 +166,11 @@ const CreateLivestream = ({ navigation, route }) => {
       try {
         const streamId = newStream.streamId;
         console.log('streamId', streamId);
-        // const [url, query] = newStream.streamerUrl.url.split(`/${streamId}`);
-
-        // ref?.current.startStreaming(streamId + query, url);
 
         ref?.current.start();
 
         createStreamPost(streamId);
+        onStreamConnectionSuccess();
       } catch (e) {
         console.log('error', e);
       }
@@ -169,7 +204,7 @@ const CreateLivestream = ({ navigation, route }) => {
               fps: 30,
               bitrate: 2000 * 1000,
             }}
-            frontCamera={cameraPosition}
+            frontCamera={frontCamera}
             HWAccelEnable={true}
             denoiseEnable={true}
             torchEnable={false}
@@ -177,31 +212,6 @@ const CreateLivestream = ({ navigation, route }) => {
             volume={1.0}
             videoOrientation={NodePublisher.VIDEO_ORIENTATION_PORTRAIT}
           />
-          {/* <LiveStreamView
-            style={styles.livestreamView}
-            ref={ref}
-            camera={cameraPosition}
-            enablePinchedZoom={true}
-            video={{
-              fps: 30,
-              resolution: '720p',
-              bitrate: 2 * 1024 * 1024, // # 2 Mbps
-              gopDuration: 1, // 1 second
-            }}
-            audio={{
-              bitrate: 128000,
-              sampleRate: 44100,
-              isStereo: false,
-            }}
-            isMuted={false}
-            onConnectionSuccess={onStreamConnectionSuccess}
-            onConnectionFailed={(e) => {
-              console.error('connection failed', e);
-            }}
-            onDisconnect={() => {
-              console.log('disConnected');
-            }}
-          /> */}
           {isLive ? (
             <View style={styles.streamingWrap}>
               <View style={styles.streamingTimerWrap}>
