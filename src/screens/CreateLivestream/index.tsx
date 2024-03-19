@@ -8,6 +8,8 @@ import {
   View,
   Platform,
   PermissionsAndroid,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { closeIcon, editThumbnailIcon, syncIcon } from '../../svg/svg-xml-list';
@@ -31,6 +33,7 @@ const CreateLivestream = ({ navigation, route }) => {
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const [time, setTime] = useState<number>(0);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
+  const [isEnding, setIsEnding] = useState<boolean>(false);
   const [fileId, setFileId] = useState<string | null>(null);
 
   const [frontCamera, setFrontCamera] = useState<boolean>(true);
@@ -119,6 +122,7 @@ const CreateLivestream = ({ navigation, route }) => {
 
   const onStopStream = useCallback(async () => {
     if (newStream) {
+      setIsEnding(true);
       await StreamRepository.disposeStream(newStream.streamId);
       setIsLive(false);
       setNewStream(null);
@@ -126,6 +130,8 @@ const CreateLivestream = ({ navigation, route }) => {
       setDescription('');
       setTime(0);
       clearInterval(timer);
+
+      ref?.current.stop();
     }
   }, [newStream, timer]);
 
@@ -147,6 +153,16 @@ const CreateLivestream = ({ navigation, route }) => {
     }${minutesString}:${secondsString}`;
   };
 
+  const confirmEndStreamAlert = () => {
+    Alert.alert('Do you want to end the live stream?', undefined, [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      { text: 'OK', onPress: () => onStopStream() },
+    ]);
+  };
+
   useEffect(() => {
     if (Platform.OS === 'android') requestPermission();
   }, []);
@@ -162,6 +178,7 @@ const CreateLivestream = ({ navigation, route }) => {
         },
       });
     };
+
     if (newStream) {
       try {
         const streamId = newStream.streamId;
@@ -212,7 +229,12 @@ const CreateLivestream = ({ navigation, route }) => {
             volume={1.0}
             videoOrientation={NodePublisher.VIDEO_ORIENTATION_PORTRAIT}
           />
-          {isLive ? (
+          {isEnding ? (
+            <View style={styles.endingStreamWrap}>
+              <ActivityIndicator size="large" color="#FFFFFF" />
+              <Text style={styles.endingStreamText}>Ending Live Stream</Text>
+            </View>
+          ) : isLive ? (
             <View style={styles.streamingWrap}>
               <View style={styles.streamingTimerWrap}>
                 <Text style={styles.streamingTimer}>
@@ -283,23 +305,25 @@ const CreateLivestream = ({ navigation, route }) => {
           )}
         </View>
 
-        <View style={styles.footer}>
-          {isLive ? (
-            <View style={styles.streamingFooter}>
-              {renderOptionIcon(syncIcon('white'), onSwitchCamera)}
-              <TouchableOpacity
-                style={styles.finishButton}
-                onPress={onStopStream}
-              >
-                <Text style={styles.finishButtonText}>Finish</Text>
+        {!isEnding && (
+          <View style={styles.footer}>
+            {isLive ? (
+              <View style={styles.streamingFooter}>
+                {renderOptionIcon(syncIcon('white'), onSwitchCamera)}
+                <TouchableOpacity
+                  style={styles.finishButton}
+                  onPress={confirmEndStreamAlert}
+                >
+                  <Text style={styles.finishButtonText}>Finish</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity style={styles.goLiveButton} onPress={onGoLive}>
+                <Text style={styles.goLiveButtonText}>Go Live</Text>
               </TouchableOpacity>
-            </View>
-          ) : (
-            <TouchableOpacity style={styles.goLiveButton} onPress={onGoLive}>
-              <Text style={styles.goLiveButtonText}>Go Live</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+            )}
+          </View>
+        )}
       </View>
       <ActionSheet
         ref={actionSheetRef}
