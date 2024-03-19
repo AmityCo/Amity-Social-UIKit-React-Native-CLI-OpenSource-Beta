@@ -96,20 +96,22 @@ const CreateLivestream = ({ navigation, route }) => {
   }, []);
 
   const onGoLive = useCallback(async () => {
-    setIsConnecting(true);
-    setIsLive(true);
+    if (title) {
+      setIsConnecting(true);
+      setIsLive(true);
 
-    if (imageUri) await uploadFile(imageUri);
+      if (imageUri) await uploadFile(imageUri);
 
-    const { data } = await StreamRepository.createStream({
-      title,
-      description,
-      thumbnailFileId: fileId,
-    });
+      const { data } = await StreamRepository.createStream({
+        title,
+        description,
+        thumbnailFileId: fileId,
+      });
 
-    if (data) {
-      setNewStream(data);
-    }
+      if (data) {
+        setNewStream(data);
+      }
+    } else emptyTitleAlert();
   }, [title, description, imageUri, fileId, uploadFile]);
 
   const onStreamConnectionSuccess = () => {
@@ -151,6 +153,10 @@ const CreateLivestream = ({ navigation, route }) => {
     return `${
       hours > 0 ? hoursString + ':' : ''
     }${minutesString}:${secondsString}`;
+  };
+
+  const emptyTitleAlert = () => {
+    Alert.alert('Input Error', 'Title cannot be empty.', [{ text: 'OK' }]);
   };
 
   const confirmEndStreamAlert = () => {
