@@ -67,6 +67,9 @@ export type RootStackParamList = {
     // initVideoPostsFullSize?: MediaUri[];
     // initImagePostsFullSize?: MediaUri[];
   };
+  PostDetailById: {
+    postId: string;
+  };
   UserProfile: {
     userId: string;
   };

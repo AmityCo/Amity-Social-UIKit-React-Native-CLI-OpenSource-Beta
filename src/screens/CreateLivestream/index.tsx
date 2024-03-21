@@ -35,6 +35,7 @@ const CreateLivestream = ({ navigation, route }) => {
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const [isEnding, setIsEnding] = useState<boolean>(false);
   const [fileId, setFileId] = useState<string | null>(null);
+  const [post, setPost] = useState<Amity.Post | null>(null);
 
   const [frontCamera, setFrontCamera] = useState<boolean>(true);
 
@@ -135,8 +136,14 @@ const CreateLivestream = ({ navigation, route }) => {
       setTime(0);
       clearInterval(timer);
       setIsEnding(false);
+
+      console.log('postId', post.postId);
+
+      navigation.navigate('PostDetail', {
+        postId: post.postId,
+      });
     }
-  }, [newStream, timer]);
+  }, [newStream, timer, post, navigation]);
 
   const onSwitchCamera = () => {
     setFrontCamera((prev) => !prev);
@@ -176,7 +183,7 @@ const CreateLivestream = ({ navigation, route }) => {
 
   useEffect(() => {
     const createStreamPost = async (streamId: Amity.Stream['streamId']) => {
-      await PostRepository.createPost({
+      const { data: postData } = await PostRepository.createPost({
         targetId,
         targetType,
         dataType: 'liveStream',
@@ -184,6 +191,7 @@ const CreateLivestream = ({ navigation, route }) => {
           streamId,
         },
       });
+      setPost(postData);
     };
 
     if (newStream) {
