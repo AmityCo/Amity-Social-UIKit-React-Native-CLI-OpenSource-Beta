@@ -104,7 +104,7 @@ const CreateLivestream = ({ navigation, route }) => {
 
       const { data } = await StreamRepository.createStream({
         title,
-        description,
+        description: description || undefined,
         thumbnailFileId: fileId,
       });
 
@@ -130,8 +130,8 @@ const CreateLivestream = ({ navigation, route }) => {
       ref?.current.stop();
       setIsLive(false);
       setNewStream(null);
-      setTitle('');
-      setDescription('');
+      setTitle(undefined);
+      setDescription(undefined);
       setTime(0);
       clearInterval(timer);
       setIsEnding(false);
