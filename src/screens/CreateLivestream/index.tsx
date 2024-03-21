@@ -126,14 +126,15 @@ const CreateLivestream = ({ navigation, route }) => {
     if (newStream) {
       setIsEnding(true);
       await StreamRepository.disposeStream(newStream.streamId);
+
+      ref?.current.stop();
       setIsLive(false);
       setNewStream(null);
       setTitle('');
       setDescription('');
       setTime(0);
       clearInterval(timer);
-
-      ref?.current.stop();
+      setIsEnding(false);
     }
   }, [newStream, timer]);
 
