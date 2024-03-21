@@ -10,11 +10,6 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@api.video/react-native-livestream@^1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@api.video/react-native-livestream/-/react-native-livestream-1.2.4.tgz#2b86352c5afd205ee8d0dfdcbb9a73afc57837a8"
-  integrity sha512-IYtx3pCnOrURrf5uI5X/k1p0b/S8lhs/C9LohD3sQY0DvqMtTn05ktKtlbkLDeDiJ/uYu7+7vnAPUfRj2I/jFQ==
-
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.23.5":
   version "7.23.5"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.23.5.tgz#9009b69a8c602293476ad598ff53e4562e15c244"

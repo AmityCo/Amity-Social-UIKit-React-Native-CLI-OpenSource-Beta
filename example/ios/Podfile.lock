@@ -2,8 +2,6 @@ PODS:
   - amity-react-native-social-ui-kit (0.1.3):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - ApiVideoLiveStream (1.3.4):
-    - HaishinKit (= 1.4.3)
   - boost (1.76.0)
   - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
@@ -76,13 +74,10 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
-  - HaishinKit (1.4.3):
-    - Logboard (~> 2.3.0)
   - hermes-engine (0.72.4):
     - hermes-engine/Pre-built (= 0.72.4)
   - hermes-engine/Pre-built (0.72.4)
   - libevent (2.1.12)
-  - Logboard (2.3.1)
   - NodeMediaClient (3.2.7)
   - OpenSSL-Universal (1.1.1100)
   - PromisesObjC (2.3.1)
@@ -393,9 +388,6 @@ PODS:
   - react-native-image-picker (7.1.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - react-native-live-stream (1.2.4):
-    - ApiVideoLiveStream (= 1.3.4)
-    - React-Core
   - react-native-netinfo (11.3.1):
     - React-Core
   - react-native-nodemediaclient (0.3.3):
@@ -588,7 +580,6 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-create-thumbnail (from `../node_modules/react-native-create-thumbnail`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
-  - "react-native-live-stream (from `../node_modules/@api.video/react-native-livestream`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-nodemediaclient (from `../node_modules/react-native-nodemediaclient`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -619,7 +610,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - ApiVideoLiveStream
     - CocoaAsyncSocket
     - DVAssetLoaderDelegate
     - Flipper
@@ -631,9 +621,7 @@ SPEC REPOS:
     - Flipper-PeerTalk
     - FlipperKit
     - fmt
-    - HaishinKit
     - libevent
-    - Logboard
     - NodeMediaClient
     - OpenSSL-Universal
     - PromisesObjC
@@ -692,8 +680,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-create-thumbnail"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
-  react-native-live-stream:
-    :path: "../node_modules/@api.video/react-native-livestream"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-nodemediaclient:
@@ -748,8 +734,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  amity-react-native-social-ui-kit: fe7c5e6cbeeae9131e82fe3a7bfdd662788ca001
-  ApiVideoLiveStream: 03ec3c9acf26daff1468c6b070f7437f182e6ed2
+  amity-react-native-social-ui-kit: 11cce2f90523fb91d46bf98e8c9823e75d250e01
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
@@ -766,10 +751,8 @@ SPEC CHECKSUMS:
   FlipperKit: 2efad7007d6745a3f95e4034d547be637f89d3f6
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  HaishinKit: 56633b5f3f298063d2f462e8c9a7faa51cd1a96b
   hermes-engine: 81191603c4eaa01f5e4ae5737a9efcf64756c7b2
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  Logboard: 3d98bb85de6a36b255ab637e8178eb5671c5c3a6
   NodeMediaClient: 2d4a5db55f079801318b769d5a9fbd01c93cd68f
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
@@ -791,7 +774,6 @@ SPEC CHECKSUMS:
   React-logger: da1ebe05ae06eb6db4b162202faeafac4b435e77
   react-native-create-thumbnail: ab55d24aea01723cf386f18b0b542aabb1982f27
   react-native-image-picker: 5e076db26cd81660cfb6db5bcf517cfa12054d45
-  react-native-live-stream: 5f45258b0c338139bd84e76e3f14c772ffb4f8c9
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
   react-native-nodemediaclient: 0d08e4fa19a320091eca814024991cff611e6d05
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
@@ -822,6 +804,6 @@ SPEC CHECKSUMS:
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 408f2cdd2564c12df2f2e942bb0642e7051598bd
+PODFILE CHECKSUM: e191a509b1ae498be84c196391f2f509c808e56b
 
 COCOAPODS: 1.12.1
