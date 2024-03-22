@@ -1,6 +1,6 @@
 export enum TabName {
   NewsFeed = 'NewsFeed',
-  Explorer = 'Explorer',
+  Explore = 'Explore',
   Timeline = 'Timeline',
   Gallery = 'Gallery',
   Communities = 'Communities',
@@ -8,4 +8,6 @@ export enum TabName {
   Members = 'Members',
   Moderators = 'Moderators',
   MyCommunities = 'MyCommunities',
+  Videos = 'Videos',
+  Photos = 'Photos',
 }

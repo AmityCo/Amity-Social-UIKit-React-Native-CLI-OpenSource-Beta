@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, RouteProp } from '@react-navigation/native';
 import * as React from 'react';
 import {
   NativeStackNavigationProp,
@@ -30,11 +30,15 @@ import { SvgXml } from 'react-native-svg';
 import { closeIcon } from '../svg/svg-xml-list';
 import { useStyles } from '../routes/style';
 import BackButton from '../components/BackButton';
-import CloseButton from '../components/CloseButton';
+import CancelButton from '../components/CancelButton';
 import EditCommunity from '../screens/EditCommunity/EditCommunity';
 import VideoPlayerFull from '../screens/VideoPlayerFullScreen';
 import PostTypeChoiceModal from '../components/PostTypeChoiceModal/PostTypeChoiceModal';
 import CreatePoll from '../screens/CreatePoll/CreatePoll';
+import ReactionListScreen from '../screens/ReactionListScreen/ReactionListScreen';
+import CreateLivestream from '../screens/CreateLivestream';
+import PostDetailById from '../screens/PostDetailById';
+import CloseButton from '../components/CloseButton';
 
 export default function SocialNavigator() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -60,9 +64,26 @@ export default function SocialNavigator() {
           }}
         >
           <Stack.Screen name="Home" component={Home} />
-          {/* <Stack.Screen name="Community" component={Home} /> */}
           <Stack.Screen name="Explore" component={Explore} />
-          <Stack.Screen name="PostDetail" component={PostDetail} />
+          <Stack.Screen
+            name="PostDetail"
+            component={PostDetail}
+            options={({
+              navigation,
+            }: {
+              navigation: NativeStackNavigationProp<any>;
+            }) => ({
+              headerLeft: () => {
+                const routes = navigation.getState().routes;
+                const previousRoute = routes[routes.length - 2];
+                if (previousRoute?.name === 'CreateLivestream')
+                  return <CloseButton onPress={() => navigation.pop(2)} />;
+                return <BackButton />;
+              },
+              title: '',
+              headerTitleAlign: 'center',
+            })}
+          />
           <Stack.Screen
             name="CategoryList"
             component={CategoryList}
@@ -167,6 +188,11 @@ export default function SocialNavigator() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="CreateLivestream"
+            component={CreateLivestream}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="UserProfile"
             component={UserProfile}
             options={{
@@ -183,7 +209,7 @@ export default function SocialNavigator() {
             }: {
               navigation: NativeStackNavigationProp<any>;
             }) => ({
-              headerLeft: () => <CloseButton navigation={navigation} />,
+              headerLeft: () => <CancelButton navigation={navigation} />,
               title: 'Edit Profile',
               headerTitleAlign: 'center',
             })}
@@ -196,6 +222,14 @@ export default function SocialNavigator() {
             name="VideoPlayer"
             component={VideoPlayerFull}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ReactionList"
+            component={ReactionListScreen}
+            options={{
+              title: 'Reactions',
+              headerLeft: () => <BackButton />,
+            }}
           />
         </Stack.Navigator>
       )}
