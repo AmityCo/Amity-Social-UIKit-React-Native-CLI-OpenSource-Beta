@@ -9,7 +9,7 @@ import { RootStackParamList } from '../../routes/RouteParamList';
 import { SvgXml } from 'react-native-svg';
 import { exclamationIcon, playBtn } from '../../svg/svg-xml-list';
 
-import LivestreamEndedView from '../LivestreamEndedView';
+import LivestreamEndedView from './LivestreamEndedView';
 
 import Video from 'react-native-video';
 import { useDispatch } from 'react-redux';
@@ -29,8 +29,6 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
   const videoPlayerRef = React.useRef<Video>(null);
 
   const [livestream, setLivestream] = useState<Amity.Stream>();
-
-  // const { updateLivestream } = livestreamSlice.actions;
 
   const dispatch = useDispatch();
 

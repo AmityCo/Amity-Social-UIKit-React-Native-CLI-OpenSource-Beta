@@ -7,7 +7,7 @@ import { SvgXml } from 'react-native-svg';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../routes/RouteParamList';
 import { StreamRepository } from '@amityco/ts-sdk-react-native';
-import LivestreamEndedView from '../../components/LivestreamEndedView';
+import LivestreamEndedView from '../../components/LivestreamSection/LivestreamEndedView';
 
 const LiveStreamPlayer = () => {
   const ref = useRef(null);

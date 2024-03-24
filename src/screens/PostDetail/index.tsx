@@ -50,6 +50,8 @@ import { IMentionPosition } from '../CreatePost';
 import { SvgXml } from 'react-native-svg';
 import { closeIcon } from '../../svg/svg-xml-list';
 
+import { amityPostsFormatter } from '../../util/postDataFormatter';
+
 const PostDetail = () => {
   const theme = useTheme() as MyMD3Theme;
   const styles = useStyles();
@@ -68,8 +70,6 @@ const PostDetail = () => {
   const flatListRef = useRef(null);
   let isSubscribed = false;
   const disposers: Amity.Unsubscriber[] = [];
-
-  const [postCollection, setPostCollection] = useState<Amity.Post<any>>();
 
   const [loading, setLoading] = useState<boolean>(true);
   const { currentPostdetail } = useSelector(
@@ -95,6 +95,8 @@ const PostDetail = () => {
   const [replyUserName, setReplyUserName] = useState<string>('');
   const [replyCommentId, setReplyCommentId] = useState<string>('');
 
+  const [currentPost, setCurrentPost] = useState<IPost>();
+
   useEffect(() => {
     const checkMentionNames = mentionNames.filter((item) => {
       return inputMessage.includes(item.displayName);
@@ -107,23 +109,25 @@ const PostDetail = () => {
   }, [inputMessage]);
 
   const getPost = (postId: string) => {
-    PostRepository.getPost(postId, async ({ data }) => {
-      setPostCollection(data);
+    PostRepository.getPost(postId, async ({ data, loading }) => {
+      if (!loading && data) {
+        const formattedPost = await amityPostsFormatter([data]);
+        setCurrentPost(formattedPost[0]);
+      }
     });
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 100);
-    getPost(postId);
-  }, [postId]);
+    if (currentPost) {
+      subscribeTopic(getPostTopic(currentPost));
 
-  useEffect(() => {
-    if (postCollection) {
-      subscribeTopic(getPostTopic(postCollection));
+      if (currentPost.targetType === 'community')
+        getCommunity(currentPost.targetId);
+      else if (currentPost.targetType === 'user') getUser(currentPost.targetId);
+
+      getCommentsByPostId(currentPost.postId);
     }
-  }, [postCollection]);
+  }, [currentPost]);
 
   const subscribeCommentTopic = (targetType: string) => {
     if (isSubscribed) return;
@@ -152,6 +156,7 @@ const PostDetail = () => {
       isSubscribed = true;
     }
   };
+
   function getCommentsByPostId(postId: string) {
     CommentRepository.getComments(
       {
@@ -164,10 +169,23 @@ const PostDetail = () => {
         if (data.error) throw data.error;
         if (!data.loading) {
           setCommentCollection(data);
+          setLoading(false);
         }
       }
     );
   }
+
+  const getCommunity = (communityId: string) => {
+    CommunityRepository.getCommunity(communityId, ({ data: community }) => {
+      setCommunityObject(community);
+    });
+  };
+
+  const getUser = (userId: string) => {
+    UserRepository.getUser(userId, ({ data: user }) => {
+      setUserObject(user);
+    });
+  };
 
   useEffect(() => {
     const postList = isFromGlobalfeed ? postListGlobal : postListFeed;
@@ -177,23 +195,9 @@ const PostDetail = () => {
   }, [communityObject, userObject]);
 
   useEffect(() => {
-    const postList = isFromGlobalfeed ? postListGlobal : postListFeed;
-    if (postList[postIndex] && postList[postIndex].targetType === 'community') {
-      CommunityRepository.getCommunity(
-        postList[postIndex].targetId,
-        ({ data: community }) => {
-          setCommunityObject(community);
-        }
-      );
-    } else if (
-      postList[postIndex] &&
-      postList[postIndex].targetType === 'user'
-    ) {
-      UserRepository.getUser(postList[postIndex].targetId, ({ data: user }) => {
-        setUserObject(user);
-      });
-    }
-    getCommentsByPostId(postList[postIndex]?.postId);
+    if (currentPostdetail.postId === postId) {
+      setCurrentPost(currentPostdetail);
+    } else getPost(postId);
   }, []);
 
   const queryComment = async () => {
@@ -412,7 +416,7 @@ const PostDetail = () => {
       <ScrollView onScroll={handleScroll} style={styles.container}>
         <PostList
           onChange={onPostChange}
-          postDetail={currentPostdetail as IPost}
+          postDetail={currentPost as IPost}
           isGlobalfeed={isFromGlobalfeed}
         />
 

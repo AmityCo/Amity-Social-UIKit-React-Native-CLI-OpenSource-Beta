@@ -137,8 +137,6 @@ const CreateLivestream = ({ navigation, route }) => {
       clearInterval(timer);
       setIsEnding(false);
 
-      console.log('postId', post.postId);
-
       navigation.navigate('PostDetail', {
         postId: post.postId,
       });
@@ -197,7 +195,6 @@ const CreateLivestream = ({ navigation, route }) => {
     if (newStream) {
       try {
         const streamId = newStream.streamId;
-        console.log('streamId', streamId);
 
         ref?.current.start();
 
