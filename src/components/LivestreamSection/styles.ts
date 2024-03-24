@@ -7,6 +7,18 @@ export const useStyles = () => {
     gap: 8,
     marginHorizontal: -16,
   };
+
+  const streamStatus = {
+    position: 'absolute' as 'absolute' | 'relative',
+    top: 16,
+    left: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 5,
+    zIndex: 1,
+  };
+
   const styles = StyleSheet.create({
     container: {
       paddingVertical: 10,
@@ -20,6 +32,7 @@ export const useStyles = () => {
     },
     streamEndedContainer: {
       ...streamContainer,
+      backgroundColor: '#000000',
       height: 266,
       flexDirection: 'column',
       justifyContent: 'center',
@@ -42,15 +55,10 @@ export const useStyles = () => {
       width: '100%',
       height: '100%',
     },
-    streamStatus: {
-      position: 'absolute',
-      top: 16,
-      left: 16,
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      borderRadius: 5,
-      zIndex: 1,
+    streamStatus,
+    streamStatusLive: {
+      ...streamStatus,
+      backgroundColor: '#FF305A',
     },
     streamStatusText: {
       fontSize: 13,

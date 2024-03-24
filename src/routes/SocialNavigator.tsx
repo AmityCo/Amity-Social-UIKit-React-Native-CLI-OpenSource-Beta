@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import * as React from 'react';
 import {
   NativeStackNavigationProp,
@@ -37,7 +37,7 @@ import PostTypeChoiceModal from '../components/PostTypeChoiceModal/PostTypeChoic
 import CreatePoll from '../screens/CreatePoll/CreatePoll';
 import ReactionListScreen from '../screens/ReactionListScreen/ReactionListScreen';
 import CreateLivestream from '../screens/CreateLivestream';
-import PostDetailById from '../screens/PostDetailById';
+import LivestreamPlayer from '../screens/LivestreamPlayer';
 import CloseButton from '../components/CloseButton';
 
 export default function SocialNavigator() {
@@ -230,6 +230,11 @@ export default function SocialNavigator() {
               title: 'Reactions',
               headerLeft: () => <BackButton />,
             }}
+          />
+          <Stack.Screen
+            name="LivestreamPlayer"
+            component={LivestreamPlayer}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       )}

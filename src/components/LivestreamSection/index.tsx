@@ -4,12 +4,15 @@ import { StreamRepository } from '@amityco/ts-sdk-react-native';
 import { useStyles } from './styles';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import useAuth from '../../../src/hooks/useAuth';
-import { RootStackParamList } from '../../../src/routes/RouteParamList';
+import useAuth from '../../hooks/useAuth';
+import { RootStackParamList } from '../../routes/RouteParamList';
 import { SvgXml } from 'react-native-svg';
-import { playBtn } from '../../../src/svg/svg-xml-list';
-import { exclamationIcon } from '../../../src/svg/svg-xml-list';
+import { exclamationIcon, playBtn } from '../../svg/svg-xml-list';
+
+import LivestreamEndedView from '../LivestreamEndedView';
+
 import Video from 'react-native-video';
+import { useDispatch } from 'react-redux';
 
 interface ILivestreamSection {
   streamId: Amity.Stream['streamId'];
@@ -26,10 +29,19 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
   const videoPlayerRef = React.useRef<Video>(null);
 
   const [livestream, setLivestream] = useState<Amity.Stream>();
+
+  // const { updateLivestream } = livestreamSlice.actions;
+
+  const dispatch = useDispatch();
+
   const [livestreamUrl, setLivestreamUrl] = useState<string>('');
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-  const onPlayVideo = () => {
+  const onPlayLivestream = useCallback(() => {
+    navigation.navigate('LivestreamPlayer', { streamId: livestream.streamId });
+  }, [livestream, navigation]);
+
+  const onPlayVideo = useCallback(() => {
     if (Platform.OS === 'ios') {
       setIsPlaying(true);
       setTimeout(() => {
@@ -42,11 +54,11 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
         source: livestreamUrl,
       });
     }
-  };
+  }, [livestreamUrl, navigation]);
 
-  const onClosePlayer = () => {
+  const onClosePlayer = useCallback(() => {
     setIsPlaying(false);
-  };
+  }, [setIsPlaying]);
 
   const getLivestreamThumbnail = useCallback(() => {
     return livestream.thumbnailFileId
@@ -82,7 +94,7 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
     return () => {
       unsubscribe();
     };
-  }, [streamId]);
+  }, [streamId, dispatch]);
 
   if (livestream) {
     return (
@@ -96,18 +108,11 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
           </View>
         )}
 
-        {!livestream.isLive && livestream.status === 'ended' && (
-          <View key={livestream.streamId} style={styles.streamEndedContainer}>
-            <Text style={styles.streamNotAvailableTitle}>
-              This livestream has ended.
-            </Text>
-            <Text style={styles.streamNotAvailableDescription}>
-              {'Playback will be available for you \nto watch shortly.'}
-            </Text>
-          </View>
+        {livestream.status === 'ended' && (
+          <LivestreamEndedView key={livestream.streamId} />
         )}
 
-        {!livestream.isLive && livestream.status === 'recorded' && (
+        {livestream.status === 'recorded' && (
           <View key={livestream.streamId} style={styles.streamLiveContainer}>
             <Image
               source={getLivestreamThumbnail()}
@@ -125,9 +130,23 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
           </View>
         )}
 
-        {livestream.isLive && (
+        {livestream.status === 'live' && (
           <View>
-            <Text>Live</Text>
+            <View key={livestream.streamId} style={styles.streamLiveContainer}>
+              <Image
+                source={getLivestreamThumbnail()}
+                style={styles.streamImageCover}
+              />
+              <View style={styles.streamStatusLive}>
+                <Text style={styles.streamStatusText}>LIVE</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.streamPlayButton}
+                onPress={onPlayLivestream}
+              >
+                <SvgXml xml={playBtn} width="50" height="50" />
+              </TouchableOpacity>
+            </View>
           </View>
         )}
 
