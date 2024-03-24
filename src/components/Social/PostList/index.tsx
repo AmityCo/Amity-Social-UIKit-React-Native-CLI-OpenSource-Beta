@@ -66,7 +66,6 @@ export interface IPost {
 }
 export interface IPostList {
   onDelete?: (postId: string) => void;
-  onChange?: (postDetail: IPost) => void;
   postDetail: IPost;
   postIndex?: number;
   isGlobalfeed?: boolean;

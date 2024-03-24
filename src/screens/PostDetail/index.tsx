@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import {
+  type RouteProp,
+  useRoute,
+  useNavigation,
+} from '@react-navigation/native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -49,13 +53,15 @@ import MentionPopup from '../../components/MentionPopup';
 import { IMentionPosition } from '../CreatePost';
 import { SvgXml } from 'react-native-svg';
 import { closeIcon } from '../../svg/svg-xml-list';
-
 import { amityPostsFormatter } from '../../util/postDataFormatter';
+import { deletePostById } from '../../providers/Social/feed-sdk';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const PostDetail = () => {
   const theme = useTheme() as MyMD3Theme;
   const styles = useStyles();
   const route = useRoute<RouteProp<RootStackParamList, 'PostDetail'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   const { postId, postIndex, isFromGlobalfeed } = route.params;
 
@@ -291,10 +297,6 @@ const PostDetail = () => {
     }
   };
 
-  const onPostChange = (post: IPost) => {
-    console.log('post:', post);
-  };
-
   const handleSelectionChange = (event) => {
     setCursorIndex(event.nativeEvent.selection.start);
   };
@@ -400,10 +402,21 @@ const PostDetail = () => {
     setReplyUserName(user.displayName);
     setReplyCommentId(commentId);
   };
+
   const onCloseReply = () => {
     setReplyUserName('');
     setReplyCommentId('');
   };
+
+  const onDeletePost = useCallback(async () => {
+    await deletePostById(postId);
+
+    const routes = navigation.getState().routes;
+    const previousRoute = routes[routes.length - 2];
+
+    if (previousRoute?.name === 'CreateLivestream') navigation.pop(2);
+    else navigation.goBack();
+  }, [navigation]);
 
   return loading ? (
     <View />
@@ -415,7 +428,7 @@ const PostDetail = () => {
     >
       <ScrollView onScroll={handleScroll} style={styles.container}>
         <PostList
-          onChange={onPostChange}
+          onDelete={onDeletePost}
           postDetail={currentPost as IPost}
           isGlobalfeed={isFromGlobalfeed}
         />
