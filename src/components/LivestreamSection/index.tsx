@@ -98,7 +98,10 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
     return (
       <View>
         {!livestream.isLive && livestream.status === 'idle' && (
-          <View key={livestream.streamId} style={styles.streamEndedContainer}>
+          <View
+            key={livestream.streamId}
+            style={styles.streamUnavaliableContainer}
+          >
             <SvgXml xml={exclamationIcon('#FFFFFF')} width="28" height="28" />
             <Text style={styles.streamNotAvailableDescription}>
               {'This stream is currently \nunavailable'}
@@ -107,7 +110,9 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
         )}
 
         {livestream.status === 'ended' && (
-          <LivestreamEndedView key={livestream.streamId} />
+          <View style={styles.streamEndedContainer}>
+            <LivestreamEndedView key={livestream.streamId} />
+          </View>
         )}
 
         {livestream.status === 'recorded' && (

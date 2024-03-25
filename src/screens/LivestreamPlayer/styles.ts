@@ -5,6 +5,7 @@ export const useStyles = () => {
     container: {
       backgroundColor: '#000000',
       flex: 1,
+      position: 'relative',
     },
     topSectionWrap: {
       position: 'absolute',
@@ -46,6 +47,16 @@ export const useStyles = () => {
       width: 60,
       flexDirection: 'row',
       justifyContent: 'center',
+    },
+    streamEndedWrap: {
+      height: '100%',
+      justifyContent: 'center',
+    },
+    closeButton: {
+      position: 'absolute',
+      top: 60,
+      right: 16,
+      zIndex: 200,
     },
   });
 

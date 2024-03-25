@@ -5,12 +5,12 @@ export const useStyles = () => {
     streamEndedContainer: {
       marginVertical: 10,
       gap: 8,
-      marginHorizontal: -16,
       backgroundColor: '#000000',
       height: 266,
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
+      width: '100%',
     },
     streamNotAvailableTitle: {
       color: '#FFFFFF',

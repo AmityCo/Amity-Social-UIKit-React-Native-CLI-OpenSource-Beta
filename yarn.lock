@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@amityco/ts-sdk-react-native@^6.17.0":
-  version "6.19.0"
-  resolved "https://registry.yarnpkg.com/@amityco/ts-sdk-react-native/-/ts-sdk-react-native-6.19.0.tgz#2398072b2e4824135634097fcf62de00da56e8f8"
-  integrity sha512-YQLsPtC2aPLJdMG6CyLGsTyXIk53XPhpYrnEMatZL4DVGZF3apmgZrWtHj5pMCZTw6kpSPRemCxEjjDueZZ3Pw==
+"@amityco/ts-sdk-react-native@6.20.1-621b475.0":
+  version "6.20.1-621b475.0"
+  resolved "https://registry.yarnpkg.com/@amityco/ts-sdk-react-native/-/ts-sdk-react-native-6.20.1-621b475.0.tgz#a81b9b9a3fac139672d15d98045f962341620668"
+  integrity sha512-+JjFc17iU2Qd7Q4l7YswCiXSBxOiA/QYPVzGyTw2EQR19JMigp33bGhMwxt8+lFBpEngbRa1+ObUoGmvWtyUSg==
   dependencies:
     "@react-native-async-storage/async-storage" "^1.17.7"
     "@react-native-community/netinfo" "^9.4.1"

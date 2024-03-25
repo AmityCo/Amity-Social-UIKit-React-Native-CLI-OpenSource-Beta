@@ -30,13 +30,16 @@ export const useStyles = () => {
       justifyContent: 'center',
       alignItems: 'center',
     },
-    streamEndedContainer: {
+    streamUnavaliableContainer: {
       ...streamContainer,
       backgroundColor: '#000000',
       height: 266,
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    streamEndedContainer: {
+      marginHorizontal: -16,
     },
     streamNotAvailableTitle: {
       color: '#FFFFFF',

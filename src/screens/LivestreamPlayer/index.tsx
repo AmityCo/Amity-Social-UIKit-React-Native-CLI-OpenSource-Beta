@@ -50,19 +50,24 @@ const LiveStreamPlayer = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => naviation.goBack()}
+        style={styles.closeButton}
+      >
+        <Image source={require('./../../../assets/icon/ClosePlayer.png')} />
+      </TouchableOpacity>
       {stream && stream.status && stream.status === 'ended' ? (
-        <LivestreamEndedView />
+        <>
+          <View style={styles.streamEndedWrap}>
+            <LivestreamEndedView />
+          </View>
+        </>
       ) : (
         <>
           <View style={styles.topSectionWrap}>
             <View style={styles.status}>
               <Text style={styles.statusText}>LIVE</Text>
             </View>
-            <TouchableOpacity onPress={() => naviation.goBack()}>
-              <Image
-                source={require('./../../../assets/icon/ClosePlayer.png')}
-              />
-            </TouchableOpacity>
           </View>
           {stream && stream.watcherUrl && (
             <NodePlayer
