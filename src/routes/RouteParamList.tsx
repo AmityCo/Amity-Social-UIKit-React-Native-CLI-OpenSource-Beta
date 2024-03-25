@@ -60,15 +60,12 @@ export type RootStackParamList = {
   };
   PostDetail: {
     postId: string;
-    postIndex: number;
+    postIndex?: number;
     isFromGlobalfeed?: boolean;
     // initVideoPosts?: IVideoPost[];
     // initImagePosts?: string[];
     // initVideoPostsFullSize?: MediaUri[];
     // initImagePostsFullSize?: MediaUri[];
-  };
-  PostDetailById: {
-    postId: string;
   };
   UserProfile: {
     userId: string;

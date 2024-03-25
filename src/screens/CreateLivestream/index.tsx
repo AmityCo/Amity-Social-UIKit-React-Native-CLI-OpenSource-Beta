@@ -20,15 +20,22 @@ import useImagePicker from '../../../src/hooks/useImagePicker';
 
 import { NodePublisher } from 'react-native-nodemediaclient';
 import { uploadImageFile } from '../../../src/providers/file-provider';
+import { RootStackParamList } from '../../routes/RouteParamList';
+import { NavigationProp, RouteProp } from '@react-navigation/native';
 
-const CreateLivestream = ({ navigation, route }) => {
+interface CreateLivestreamProps {
+  navigation: NavigationProp<RootStackParamList, 'CreateLivestream'>;
+  route: RouteProp<RootStackParamList, 'CreateLivestream'>;
+}
+
+const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
   const { targetId, targetType, targetName } = route.params;
 
   const styles = useStyles();
 
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [newStream, setNewStream] = useState<Amity.Stream | null>(null);
+  const [stream, setStream] = useState<Amity.Stream | null>(null);
   const [isLive, setIsLive] = useState<boolean>(false);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const [time, setTime] = useState<number>(0);
@@ -96,6 +103,25 @@ const CreateLivestream = ({ navigation, route }) => {
     }
   }, []);
 
+  const createStreamPost = useCallback(
+    (newStream: Amity.Stream) => {
+      const params = {
+        targetId,
+        targetType,
+        dataType: 'liveStream' as Amity.PostContentType,
+        data: {
+          text: `${newStream.title}${
+            newStream.description ? `\n\n${newStream.description}` : ''
+          }`,
+          streamId: newStream.streamId,
+        },
+      };
+
+      return PostRepository.createPost(params);
+    },
+    [targetId, targetType]
+  );
+
   const onGoLive = useCallback(async () => {
     if (title) {
       setIsConnecting(true);
@@ -103,17 +129,23 @@ const CreateLivestream = ({ navigation, route }) => {
 
       if (imageUri) await uploadFile(imageUri);
 
-      const { data } = await StreamRepository.createStream({
+      const { data: newStream } = await StreamRepository.createStream({
         title,
         description: description || undefined,
         thumbnailFileId: fileId,
       });
 
-      if (data) {
-        setNewStream(data);
+      if (newStream) {
+        setStream(newStream);
+
+        const { data: newPost } = await createStreamPost(newStream);
+        setPost(newPost);
+
+        ref?.current.start();
+        onStreamConnectionSuccess();
       }
     } else emptyTitleAlert();
-  }, [title, description, imageUri, fileId, uploadFile]);
+  }, [title, description, imageUri, fileId, uploadFile, createStreamPost]);
 
   const onStreamConnectionSuccess = () => {
     setIsConnecting(false);
@@ -124,13 +156,13 @@ const CreateLivestream = ({ navigation, route }) => {
   };
 
   const onStopStream = useCallback(async () => {
-    if (newStream) {
+    if (stream) {
       setIsEnding(true);
-      await StreamRepository.disposeStream(newStream.streamId);
+      await StreamRepository.disposeStream(stream.streamId);
 
       ref?.current.stop();
       setIsLive(false);
-      setNewStream(null);
+      setStream(null);
       setTitle(undefined);
       setDescription(undefined);
       setTime(0);
@@ -143,7 +175,7 @@ const CreateLivestream = ({ navigation, route }) => {
         postId: post.postId,
       });
     }
-  }, [newStream, timer, post, navigation]);
+  }, [stream, timer, post, navigation]);
 
   const onSwitchCamera = () => {
     setFrontCamera((prev) => !prev);
@@ -182,34 +214,6 @@ const CreateLivestream = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    const createStreamPost = async (streamId: Amity.Stream['streamId']) => {
-      const { data: postData } = await PostRepository.createPost({
-        targetId,
-        targetType,
-        dataType: 'liveStream',
-        data: {
-          streamId,
-        },
-      });
-      setPost(postData);
-    };
-
-    if (newStream) {
-      try {
-        const streamId = newStream.streamId;
-        console.log('streamId', streamId);
-
-        ref?.current.start();
-
-        createStreamPost(streamId);
-        onStreamConnectionSuccess();
-      } catch (e) {
-        console.log('error', e);
-      }
-    }
-  }, [targetId, targetType, newStream]);
-
-  useEffect(() => {
     if (imageUri && actionSheetRef.current) actionSheetRef.current?.hide();
   }, [imageUri]);
 
@@ -220,7 +224,7 @@ const CreateLivestream = ({ navigation, route }) => {
           <NodePublisher
             ref={ref}
             style={{ flex: 1 }}
-            url={newStream?.streamerUrl?.url || ''}
+            url={stream?.streamerUrl?.url || ''}
             audioParam={{
               codecid: NodePublisher.NMC_CODEC_ID_AAC,
               profile: NodePublisher.NMC_PROFILE_AUTO,
