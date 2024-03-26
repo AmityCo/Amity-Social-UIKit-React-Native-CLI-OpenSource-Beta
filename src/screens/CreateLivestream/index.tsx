@@ -128,8 +128,6 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
 
       if (imageUri) fileId = await uploadFile(imageUri);
 
-      console.log('fileId:', fileId);
-
       const { data: newStream } = await StreamRepository.createStream({
         title,
         description: description || undefined,
