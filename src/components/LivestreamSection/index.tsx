@@ -1,10 +1,17 @@
-import { Image, Platform, TouchableOpacity, View, Text } from 'react-native';
+import {
+  Image,
+  Platform,
+  TouchableOpacity,
+  View,
+  Text,
+  ImageSourcePropType,
+} from 'react-native';
 import React, { useEffect, useState, useCallback } from 'react';
-import { StreamRepository } from '@amityco/ts-sdk-react-native';
+import { FileRepository, StreamRepository } from '@amityco/ts-sdk-react-native';
 import { useStyles } from './styles';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import useAuth from '../../hooks/useAuth';
+
 import { RootStackParamList } from '../../routes/RouteParamList';
 import { SvgXml } from 'react-native-svg';
 import { exclamationIcon, playBtn } from '../../svg/svg-xml-list';
@@ -20,7 +27,7 @@ interface ILivestreamSection {
 
 const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
   const styles = useStyles();
-  const { apiRegion } = useAuth();
+
   const navigation =
     useNavigation<
       NativeStackNavigationProp<RootStackParamList, 'VideoPlayer'>
@@ -32,6 +39,7 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
 
   const dispatch = useDispatch();
 
+  const [thumbnailUrl, setThumbnailUrl] = useState<ImageSourcePropType>();
   const [livestreamUrl, setLivestreamUrl] = useState<string>('');
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
@@ -58,13 +66,24 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
     setIsPlaying(false);
   }, [setIsPlaying]);
 
-  const getLivestreamThumbnail = useCallback(() => {
-    return livestream.thumbnailFileId
-      ? {
-          uri: `https://api.${apiRegion}.amity.co/api/v3/files/${livestream.thumbnailFileId}/download`,
-        }
-      : require('../../../assets/images/default-livestream-thumbnail.png');
-  }, [livestream, apiRegion]);
+  const getLivestreamThumbnail = async (currentStream: Amity.Stream) => {
+    const defaultThumbnail = require('../../../assets/images/default-livestream-thumbnail.png');
+
+    if (currentStream.thumbnailFileId) {
+      const file = await FileRepository.getFile(currentStream.thumbnailFileId);
+
+      if (file) {
+        const fileUrl = FileRepository.fileUrlWithSize(
+          file.data.fileUrl,
+          'full'
+        );
+
+        setThumbnailUrl({ uri: fileUrl });
+        return;
+      }
+    }
+    setThumbnailUrl(defaultThumbnail);
+  };
 
   useEffect(() => {
     const getLivestream = () => {
@@ -74,6 +93,7 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
           if (error) console.error('Error fetching livestream', error);
           if (!loading && data) {
             setLivestream({ ...data });
+            getLivestreamThumbnail(data);
 
             if (
               data.recordings &&
@@ -115,12 +135,9 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
           </View>
         )}
 
-        {livestream.status === 'recorded' && (
+        {livestream.status === 'recorded' && thumbnailUrl && (
           <View key={livestream.streamId} style={styles.streamLiveContainer}>
-            <Image
-              source={getLivestreamThumbnail()}
-              style={styles.streamImageCover}
-            />
+            <Image source={thumbnailUrl} style={styles.streamImageCover} />
             <View style={styles.streamStatus}>
               <Text style={styles.streamStatusText}>RECORDED</Text>
             </View>
@@ -133,13 +150,10 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
           </View>
         )}
 
-        {livestream.status === 'live' && (
+        {livestream.status === 'live' && thumbnailUrl && (
           <View>
             <View key={livestream.streamId} style={styles.streamLiveContainer}>
-              <Image
-                source={getLivestreamThumbnail()}
-                style={styles.streamImageCover}
-              />
+              <Image source={thumbnailUrl} style={styles.streamImageCover} />
               <View style={styles.streamStatusLive}>
                 <Text style={styles.streamStatusText}>LIVE</Text>
               </View>

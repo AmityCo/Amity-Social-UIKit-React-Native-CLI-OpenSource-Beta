@@ -41,7 +41,6 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
   const [time, setTime] = useState<number>(0);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const [isEnding, setIsEnding] = useState<boolean>(false);
-  const [fileId, setFileId] = useState<string | null>(null);
   const [post, setPost] = useState<Amity.Post | null>(null);
 
   const [frontCamera, setFrontCamera] = useState<boolean>(true);
@@ -98,9 +97,7 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
 
   const uploadFile = useCallback(async (uri: string) => {
     const file: Amity.File<any>[] = await uploadImageFile(uri);
-    if (file) {
-      setFileId(file[0].fileId);
-    }
+    return file[0].fileId;
   }, []);
 
   const createStreamPost = useCallback(
@@ -127,7 +124,11 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
       setIsConnecting(true);
       setIsLive(true);
 
-      if (imageUri) await uploadFile(imageUri);
+      let fileId: string | undefined;
+
+      if (imageUri) fileId = await uploadFile(imageUri);
+
+      console.log('fileId:', fileId);
 
       const { data: newStream } = await StreamRepository.createStream({
         title,
@@ -145,7 +146,7 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
         onStreamConnectionSuccess();
       }
     } else emptyTitleAlert();
-  }, [title, description, imageUri, fileId, uploadFile, createStreamPost]);
+  }, [title, description, imageUri, uploadFile, createStreamPost]);
 
   const onStreamConnectionSuccess = () => {
     setIsConnecting(false);
