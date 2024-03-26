@@ -6,7 +6,7 @@ import { closeIcon } from '../../../src/svg/svg-xml-list';
 import { useTheme } from 'react-native-paper';
 import type { MyMD3Theme } from '../../providers/amity-ui-kit-provider';
 
-export default function CloseButton({ onPress }: { onPress: () => void }) {
+function CloseButton({ onPress }: { onPress: () => void }) {
   const theme = useTheme() as MyMD3Theme;
   return (
     <TouchableOpacity onPress={onPress}>
@@ -14,3 +14,5 @@ export default function CloseButton({ onPress }: { onPress: () => void }) {
     </TouchableOpacity>
   );
 }
+
+export default React.memo(CloseButton);
