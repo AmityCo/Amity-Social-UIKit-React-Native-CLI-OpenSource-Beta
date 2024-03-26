@@ -9380,11 +9380,6 @@ react-native-insta-story@^1.1.9:
     react-native-modalbox "^2.0.2"
     react-native-swipe-gestures "^1.0.5"
 
-react-native-live-stream@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-live-stream/-/react-native-live-stream-1.0.1.tgz#35e9a71719ed995de466c8add3379a1f5b73cf2c"
-  integrity sha512-4nc/peGU8lp1JwQ7EUT742I+WdALbZjjCUnNZfZFBr833nbj651qBctCgoxPcB3MN/QZZqKp4IFJhxETp7JxNQ==
-
 react-native-media-controls@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/react-native-media-controls/-/react-native-media-controls-2.3.0.tgz#c36e876a14d12982b7c6fb759201ff439117cbd0"

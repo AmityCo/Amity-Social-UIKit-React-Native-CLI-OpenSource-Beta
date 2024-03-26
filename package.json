@@ -83,7 +83,6 @@
     "react-native-builder-bob": "^0.20.0",
     "react-native-create-thumbnail": "^2.0.0",
     "react-native-image-picker": "^7.0.0",
-    "react-native-live-stream": "^1.0.1",
     "react-native-nodemediaclient": "^0.3.3",
     "react-native-safe-area-context": "^4.7.2",
     "react-native-svg": "^14.1.0",
