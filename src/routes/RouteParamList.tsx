@@ -1,3 +1,18 @@
+type CreatePostParams = {
+  targetId: string;
+  targetName: string;
+  targetType: string;
+  isPublic?: boolean;
+  postSetting?: ValueOf<
+    Readonly<{
+      ONLY_ADMIN_CAN_POST: 'ONLY_ADMIN_CAN_POST';
+      ADMIN_REVIEW_POST_REQUIRED: 'ADMIN_REVIEW_POST_REQUIRED';
+      ANYONE_CAN_POST: 'ANYONE_CAN_POST';
+    }>
+  >;
+  needApprovalOnPostCreation: boolean;
+};
+
 export type RootStackParamList = {
   Home: { postIdCallBack?: string };
   CommunitySearch: undefined;
@@ -19,45 +34,9 @@ export type RootStackParamList = {
   Community: undefined;
   Explore: undefined;
   CategoryList: undefined;
-  CreatePost: {
-    targetId: string;
-    targetName: string;
-    targetType: string;
-    postSetting?: ValueOf<
-      Readonly<{
-        ONLY_ADMIN_CAN_POST: 'ONLY_ADMIN_CAN_POST';
-        ADMIN_REVIEW_POST_REQUIRED: 'ADMIN_REVIEW_POST_REQUIRED';
-        ANYONE_CAN_POST: 'ANYONE_CAN_POST';
-      }>
-    >;
-    needApprovalOnPostCreation: boolean;
-  };
-  CreatePoll: {
-    targetId: string;
-    targetName: string;
-    targetType: string;
-    postSetting?: ValueOf<
-      Readonly<{
-        ONLY_ADMIN_CAN_POST: 'ONLY_ADMIN_CAN_POST';
-        ADMIN_REVIEW_POST_REQUIRED: 'ADMIN_REVIEW_POST_REQUIRED';
-        ANYONE_CAN_POST: 'ANYONE_CAN_POST';
-      }>
-    >;
-    needApprovalOnPostCreation: boolean;
-  };
-  CreateLivestream: {
-    targetId: string;
-    targetName: string;
-    targetType: string;
-    postSetting?: ValueOf<
-      Readonly<{
-        ONLY_ADMIN_CAN_POST: 'ONLY_ADMIN_CAN_POST';
-        ADMIN_REVIEW_POST_REQUIRED: 'ADMIN_REVIEW_POST_REQUIRED';
-        ANYONE_CAN_POST: 'ANYONE_CAN_POST';
-      }>
-    >;
-    needApprovalOnPostCreation: boolean;
-  };
+  CreatePost: CreatePostParams;
+  CreatePoll: CreatePostParams;
+  CreateLivestream: CreatePostParams;
   PostDetail: {
     postId: string;
     postIndex?: number;

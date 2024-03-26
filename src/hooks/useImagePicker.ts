@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Alert } from 'react-native';
 import {
   launchImageLibrary,
   ImageLibraryOptions,
@@ -19,8 +20,8 @@ const useImagePicker = (options: ImageLibraryOptions): UseImagePickerType => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.errorCode) {
-        console.log(
-          'ImagePicker Error: ',
+        Alert.alert(
+          'ImagePicker Error:',
           response.errorCode + ', ' + response.errorMessage
         );
       } else {

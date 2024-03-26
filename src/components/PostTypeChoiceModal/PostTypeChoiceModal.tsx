@@ -38,27 +38,29 @@ const PostTypeChoiceModal = () => {
     targetType,
     postSetting,
     needApprovalOnPostCreation,
+    isPublic,
   } = useSelector((state: RootState) => state.ui);
   const [postType, setPostType] = useState<string>();
   const [createPostModalVisible, setCreatePostModalVisible] = useState(false);
 
   const onChooseType = (type: string) => {
     if (targetId && targetName && targetType) {
-      const targetscreen =
-        type === 'post'
-          ? 'CreatePost'
-          : type === 'poll'
-          ? 'CreatePoll'
-          : type === 'livestream'
-          ? 'CreateLivestream'
-          : null;
-      navigation.navigate(targetscreen, {
+      const targetscreen = () => {
+        if (postType === 'post') return 'CreatePost';
+        if (postType === 'poll') return 'CreatePoll';
+        if (postType === 'livestream') return 'CreateLivestream';
+        return null;
+      };
+
+      navigation.navigate(targetscreen(), {
         targetId,
         targetName,
         targetType,
         postSetting,
         needApprovalOnPostCreation,
+        isPublic,
       });
+
       closeCreatePostModal();
     } else {
       setPostType(type);

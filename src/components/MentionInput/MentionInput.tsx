@@ -1,146 +1,145 @@
-import { Text, TextInput, View, TextInputProps } from 'react-native';
+import { View, TextInputProps, FlatList } from 'react-native';
 import React, { FC, memo, useCallback, useEffect, useState } from 'react';
 import { useStyles } from './styles';
-import MentionPopup from '../MentionPopup';
-import { ISearchItem } from '../SearchItem';
+import SearchItem from '../SearchItem';
 import { IMentionPosition } from '../../screens/CreatePost';
+import {
+  MentionSuggestionsProps,
+  MentionInput as MentionTextInput,
+  replaceMentionValues,
+} from 'react-native-controlled-mentions';
+import useSearch, { TSearchItem } from '../../hooks/useSearch';
 
 interface IMentionInput extends TextInputProps {
-  inputMessage: string;
   setInputMessage: (inputMessage: string) => void;
   mentionsPosition: IMentionPosition[];
   setMentionsPosition: (mentionsPosition: IMentionPosition[]) => void;
-  mentionUsers: ISearchItem[];
-  setMentionUsers: (mentionUsers: ISearchItem[]) => void;
+  mentionUsers: TSearchItem[];
+  setMentionUsers: (mentionUsers: TSearchItem[]) => void;
+  isBottomMentionSuggestionsRender: boolean;
+  privateCommunityId: string;
+  initialValue?: string;
+  resetValue?: boolean;
 }
 
 const MentionInput: FC<IMentionInput> = ({
-  inputMessage,
+  initialValue = '',
   setInputMessage,
   mentionsPosition,
   setMentionsPosition,
   mentionUsers,
   setMentionUsers,
+  isBottomMentionSuggestionsRender,
+  privateCommunityId,
+  resetValue,
   ...rest
 }) => {
   const styles = useStyles();
   const [cursorIndex, setCursorIndex] = useState(0);
-  const [isShowMention, setIsShowMention] = useState<boolean>(false);
   const [currentSearchUserName, setCurrentSearchUserName] = useState('');
-
-  const checkMention = useCallback(
-    (inputString: string) => {
-      const startsWithAt = /^@/.test(inputString);
-      const insideWithoutLetterBefore = /[^a-zA-Z]@/.test(inputString);
-      const atSigns = inputString.match(/@/g);
-      const atSignsNumber = atSigns ? atSigns.length : 0;
-      if (
-        (startsWithAt || insideWithoutLetterBefore) &&
-        atSignsNumber > mentionUsers.length
-      ) {
-        setIsShowMention(true);
-      } else {
-        setIsShowMention(false);
-      }
-    },
-    [mentionUsers.length]
+  const { searchResult, getNextPage } = useSearch(
+    currentSearchUserName,
+    privateCommunityId
   );
-  useEffect(() => {
-    checkMention(inputMessage);
-  }, [checkMention, inputMessage]);
-
-  useEffect(() => {
-    if (!isShowMention) return;
-    const substringBeforeCursor = inputMessage.substring(0, cursorIndex);
-    const lastAtsIndex = substringBeforeCursor.lastIndexOf('@');
-    if (lastAtsIndex !== -1) {
-      const searchText: string = inputMessage.substring(
-        lastAtsIndex + 1,
-        cursorIndex + 1
-      );
-      setCurrentSearchUserName(searchText);
-    }
-  }, [cursorIndex, inputMessage, isShowMention]);
-
-  const renderTextWithMention = () => {
-    if (mentionsPosition.length === 0) {
-      return <Text style={styles.inputText}>{inputMessage}</Text>;
-    }
-    let currentPosition = 0;
-    const result = mentionsPosition.map(({ index, length }, i) => {
-      const nonHighlightedText = inputMessage.slice(currentPosition, index);
-
-      const highlightedText = (
-        <Text key={i} style={styles.mentionText}>
-          {inputMessage.slice(index, index + length)}
-        </Text>
-      );
-      currentPosition = index + length;
-      return [nonHighlightedText, highlightedText];
-    });
-    const remainingText = inputMessage.slice(currentPosition);
-    result.push([
-      <Text key="nonHighlighted-last" style={styles.inputText}>
-        {remainingText}
-      </Text>,
-    ]);
-    return <Text style={styles.inputText}>{result.flat()}</Text>;
-  };
+  const [value, setValue] = useState<string>(initialValue);
 
   const handleSelectionChange = (event) => {
     setCursorIndex(event.nativeEvent.selection.start);
   };
 
-  const onSelectUserMention = (user: ISearchItem) => {
-    const textAfterCursor: string = inputMessage.substring(
+  const onSelectUserMention = useCallback(
+    (user: TSearchItem) => {
+      const position: IMentionPosition = {
+        type: 'user',
+        length: user.displayName.length + 1,
+        index: cursorIndex - 1 - currentSearchUserName.length,
+        userId: user.id,
+        displayName: user.displayName,
+      };
+      const newMentionUsers = [...mentionUsers, user];
+      const newMentionPosition = [...mentionsPosition, position];
+      setMentionUsers(newMentionUsers);
+      setMentionsPosition(newMentionPosition);
+      setCurrentSearchUserName('');
+    },
+    [
+      currentSearchUserName,
       cursorIndex,
-      inputMessage.length + 1
-    );
-    const firstText = inputMessage.slice(
-      0,
-      cursorIndex - currentSearchUserName.length
-    );
-    const lastText = inputMessage.slice(cursorIndex, inputMessage.length);
-    const newTextAfterReplacement = `${firstText}${user.displayName}${lastText}`;
-    const newInputMessage = newTextAfterReplacement + textAfterCursor;
-    const position: IMentionPosition = {
-      type: 'user',
-      length: user.displayName.length + 1,
-      index: cursorIndex - 1 - currentSearchUserName.length,
-      userId: user.targetId,
-      displayName: user.displayName,
-    };
-    const newMentionUsers = [...mentionUsers, user];
-    const newMentionPosition = [...mentionsPosition, position];
-    setInputMessage(newInputMessage);
-    setMentionUsers(newMentionUsers);
-    setMentionsPosition(newMentionPosition);
-    setCurrentSearchUserName('');
-  };
+      mentionUsers,
+      mentionsPosition,
+      setMentionUsers,
+      setMentionsPosition,
+    ]
+  );
 
+  const onChangeInput = useCallback(
+    (text: string) => {
+      setValue(text);
+      const data = replaceMentionValues(text, ({ name }) => `@${name}`);
+      setInputMessage(data);
+    },
+    [setInputMessage]
+  );
+  useEffect(() => {
+    if (resetValue) {
+      onChangeInput('');
+    }
+    onChangeInput(initialValue);
+  }, [initialValue, onChangeInput, resetValue]);
+
+  const renderSuggestions: FC<MentionSuggestionsProps> = useCallback(
+    ({ keyword, onSuggestionPress }) => {
+      setCurrentSearchUserName(keyword || '');
+      if (keyword == null || !searchResult || searchResult?.length === 0) {
+        return null;
+      }
+      return (
+        <View style={styles.mentionListContainer}>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            onEndReached={() => getNextPage && getNextPage()}
+            nestedScrollEnabled={true}
+            data={searchResult}
+            renderItem={({ item }: { item: TSearchItem }) => {
+              return (
+                <SearchItem
+                  target={item}
+                  onPress={() => {
+                    onSelectUserMention(item);
+                    onSuggestionPress(item);
+                  }}
+                  userProfileNavigateEnabled={false}
+                />
+              );
+            }}
+            keyExtractor={(item) => item.id}
+          />
+        </View>
+      );
+    },
+    [
+      getNextPage,
+      onSelectUserMention,
+      searchResult,
+      styles.mentionListContainer,
+    ]
+  );
   return (
-    <>
-      <TextInput
-        style={
-          mentionUsers.length > 0
-            ? [styles.textInput, styles.transparentText]
-            : styles.textInput
-        }
-        value={inputMessage}
-        onChangeText={(text) => setInputMessage(text)}
-        onSelectionChange={handleSelectionChange}
-        {...rest}
-      />
-      {mentionUsers.length > 0 && (
-        <View style={styles.overlay}>{renderTextWithMention()}</View>
-      )}
-      {isShowMention && (
-        <MentionPopup
-          userName={currentSearchUserName}
-          onSelectMention={onSelectUserMention}
-        />
-      )}
-    </>
+    <MentionTextInput
+      {...rest}
+      value={value}
+      onChange={onChangeInput}
+      onSelectionChange={handleSelectionChange}
+      partTypes={[
+        {
+          isBottomMentionSuggestionsRender,
+          trigger: '@',
+          renderSuggestions,
+          textStyle: styles.mentionText,
+        },
+      ]}
+    />
   );
 };
 

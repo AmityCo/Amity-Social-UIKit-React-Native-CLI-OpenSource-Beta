@@ -15,7 +15,7 @@ import { SvgXml } from 'react-native-svg';
 import { closeIcon, editThumbnailIcon, syncIcon } from '../../svg/svg-xml-list';
 import { useStyles } from './styles';
 import { StreamRepository, PostRepository } from '@amityco/ts-sdk-react-native';
-import ActionSheet, { ActionSheetRef } from 'react-native-actions-sheet';
+import BottomSheet, { BottomSheetMethods } from '@devvie/bottom-sheet';
 import useImagePicker from '../../../src/hooks/useImagePicker';
 
 import { NodePublisher } from 'react-native-nodemediaclient';
@@ -46,8 +46,8 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
 
   const [frontCamera, setFrontCamera] = useState<boolean>(true);
 
-  const ref = useRef(null);
-  const actionSheetRef = useRef<ActionSheetRef>(null);
+  const streamRef = useRef(null);
+  const sheetRef = useRef<BottomSheetMethods>(null);
 
   const requestPermission = async () => {
     try {
@@ -141,7 +141,7 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
         const { data: newPost } = await createStreamPost(newStream);
         setPost(newPost);
 
-        ref?.current.start();
+        streamRef?.current.start();
         onStreamConnectionSuccess();
       }
     } else emptyTitleAlert();
@@ -160,7 +160,7 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
       setIsEnding(true);
       await StreamRepository.disposeStream(stream.streamId);
 
-      ref?.current.stop();
+      streamRef?.current.stop();
       setIsLive(false);
       setStream(null);
       setTitle(undefined);
@@ -211,16 +211,12 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
     if (Platform.OS === 'android') requestPermission();
   }, []);
 
-  useEffect(() => {
-    if (imageUri && actionSheetRef.current) actionSheetRef.current?.hide();
-  }, [imageUri]);
-
   return (
     <>
       <View style={styles.container}>
         <View style={styles.cameraContainer}>
           <NodePublisher
-            ref={ref}
+            ref={streamRef}
             style={{ flex: 1 }}
             url={stream?.streamerUrl?.url || ''}
             audioParam={{
@@ -271,8 +267,8 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
                     <TouchableOpacity
                       style={styles.optionIcon}
                       onPress={() => {
-                        if (imageUri && actionSheetRef.current)
-                          actionSheetRef.current?.show();
+                        if (imageUri && sheetRef.current)
+                          sheetRef.current?.open();
                         else openImageGallery();
                       }}
                     >
@@ -342,32 +338,39 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
           </View>
         )}
       </View>
-      <ActionSheet
-        ref={actionSheetRef}
-        containerStyle={styles.actionSheetContainer}
+      <BottomSheet
+        ref={sheetRef}
+        height={164}
+        closeOnDragDown={false}
+        disableBodyPanning={true}
+        disableDragHandlePanning={true}
+        customDragHandleComponent={() => null}
       >
-        <TouchableOpacity
-          style={styles.actionSheetButton}
-          onPress={() => {
-            openImageGallery();
-          }}
-        >
-          <Text style={styles.actionSheetButtonNormalText}>
-            Change cover image
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionSheetButton}
-          onPress={() => {
-            removeSelectedImage();
-            actionSheetRef.current?.hide();
-          }}
-        >
-          <Text style={styles.actionSheetButtonDeleteText}>
-            Delete cover image
-          </Text>
-        </TouchableOpacity>
-      </ActionSheet>
+        <View style={styles.bottomSheetWrap}>
+          <TouchableOpacity
+            style={styles.bottomSheetButton}
+            onPress={() => {
+              openImageGallery();
+              sheetRef.current?.close();
+            }}
+          >
+            <Text style={styles.bottomSheetButtonNormalText}>
+              Change cover image
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.bottomSheetButton}
+            onPress={() => {
+              removeSelectedImage();
+              sheetRef.current?.close();
+            }}
+          >
+            <Text style={styles.bottomSheetButtonDeleteText}>
+              Delete cover image
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </BottomSheet>
     </>
   );
 };

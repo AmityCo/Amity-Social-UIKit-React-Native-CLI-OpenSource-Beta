@@ -74,7 +74,7 @@ export const useStyles = () => {
       flexDirection: 'row',
       borderRadius: 50,
       backgroundColor: 'rgba(0, 0, 0, 0.2)',
-      width: 32,
+      minWidth: 32,
       height: 32,
     },
     optionIconInner: {
@@ -174,22 +174,19 @@ export const useStyles = () => {
       fontWeight: '600',
       color: '#292B32',
     },
-    actionSheetButton: {
+    bottomSheetWrap: {
+      marginTop: 16,
+    },
+    bottomSheetButton: {
       padding: 16,
     },
-    actionSheetContainer: {
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      paddingTop: 16,
-      paddingBottom: 20,
-    },
-    actionSheetButtonNormalText: {
+    bottomSheetButtonNormalText: {
       color: '#292B32',
       fontSize: 16,
       fontWeight: '600',
       lineHeight: 20,
     },
-    actionSheetButtonDeleteText: {
+    bottomSheetButtonDeleteText: {
       color: '#FA4D30',
       fontSize: 16,
       fontWeight: '600',

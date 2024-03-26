@@ -204,12 +204,8 @@ export default function SocialNavigator() {
           <Stack.Screen
             name="EditCommunity"
             component={EditCommunity}
-            options={({
-              navigation,
-            }: {
-              navigation: NativeStackNavigationProp<any>;
-            }) => ({
-              headerLeft: () => <CancelButton navigation={navigation} />,
+            options={() => ({
+              headerLeft: () => <CancelButton />,
               title: 'Edit Profile',
               headerTitleAlign: 'center',
             })}

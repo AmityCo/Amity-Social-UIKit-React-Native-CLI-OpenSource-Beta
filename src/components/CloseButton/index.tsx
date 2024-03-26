@@ -9,10 +9,8 @@ import type { MyMD3Theme } from '../../providers/amity-ui-kit-provider';
 export default function CloseButton({ onPress }: { onPress: () => void }) {
   const theme = useTheme() as MyMD3Theme;
   return (
-    <TouchableOpacity>
-      <TouchableOpacity onPress={onPress}>
-        <SvgXml xml={closeIcon(theme.colors.baseShade2)} width={24} />
-      </TouchableOpacity>
+    <TouchableOpacity onPress={onPress}>
+      <SvgXml xml={closeIcon(theme.colors.baseShade2)} width={24} />
     </TouchableOpacity>
   );
 }
