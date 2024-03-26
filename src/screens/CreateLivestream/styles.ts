@@ -74,7 +74,7 @@ export const useStyles = () => {
       flexDirection: 'row',
       borderRadius: 50,
       backgroundColor: 'rgba(0, 0, 0, 0.2)',
-      width: 32,
+      minWidth: 32,
       height: 32,
     },
     optionIconInner: {
