@@ -174,22 +174,19 @@ export const useStyles = () => {
       fontWeight: '600',
       color: '#292B32',
     },
-    actionSheetButton: {
+    bottomSheetWrap: {
+      marginTop: 16,
+    },
+    bottomSheetButton: {
       padding: 16,
     },
-    actionSheetContainer: {
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      paddingTop: 16,
-      paddingBottom: 20,
-    },
-    actionSheetButtonNormalText: {
+    bottomSheetButtonNormalText: {
       color: '#292B32',
       fontSize: 16,
       fontWeight: '600',
       lineHeight: 20,
     },
-    actionSheetButtonDeleteText: {
+    bottomSheetButtonDeleteText: {
       color: '#FA4D30',
       fontSize: 16,
       fontWeight: '600',
