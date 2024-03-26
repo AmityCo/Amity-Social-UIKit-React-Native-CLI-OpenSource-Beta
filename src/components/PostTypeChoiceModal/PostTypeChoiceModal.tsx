@@ -60,6 +60,7 @@ const PostTypeChoiceModal = () => {
         needApprovalOnPostCreation,
         isPublic,
       });
+
       closeCreatePostModal();
     } else {
       setPostType(type);

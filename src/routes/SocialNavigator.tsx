@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import * as React from 'react';
 import {
   NativeStackNavigationProp,
@@ -37,7 +37,6 @@ import PostTypeChoiceModal from '../components/PostTypeChoiceModal/PostTypeChoic
 import CreatePoll from '../screens/CreatePoll/CreatePoll';
 import ReactionListScreen from '../screens/ReactionListScreen/ReactionListScreen';
 import CreateLivestream from '../screens/CreateLivestream';
-import PostDetailById from '../screens/PostDetailById';
 import CloseButton from '../components/CloseButton';
 
 export default function SocialNavigator() {
@@ -204,12 +203,8 @@ export default function SocialNavigator() {
           <Stack.Screen
             name="EditCommunity"
             component={EditCommunity}
-            options={({
-              navigation,
-            }: {
-              navigation: NativeStackNavigationProp<any>;
-            }) => ({
-              headerLeft: () => <CancelButton navigation={navigation} />,
+            options={() => ({
+              headerLeft: () => <CancelButton />,
               title: 'Edit Profile',
               headerTitleAlign: 'center',
             })}
