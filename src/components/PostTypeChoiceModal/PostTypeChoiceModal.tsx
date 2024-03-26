@@ -44,15 +44,14 @@ const PostTypeChoiceModal = () => {
 
   const onChooseType = (type: string) => {
     if (targetId && targetName && targetType) {
-      const targetscreen =
-        type === 'post'
-          ? 'CreatePost'
-          : type === 'poll'
-          ? 'CreatePoll'
-          : type === 'livestream'
-          ? 'CreateLivestream'
-          : null;
-      navigation.navigate(targetscreen, {
+      const targetscreen = () => {
+        if (postType === 'post') return 'CreatePost';
+        if (postType === 'poll') return 'CreatePoll';
+        if (postType === 'livestream') return 'CreateLivestream';
+        return null;
+      };
+
+      navigation.navigate(targetscreen(), {
         targetId,
         targetName,
         targetType,
