@@ -100,9 +100,9 @@ npx pod-install
 
 Build project gradle with your Android Studio
 
-In android/build.gradle,  add kotlinVersion above 1.7.0 in buildscript > ext
+In android/build.gradle,  add kotlinVersion above 1.7.0 and compileSdkVersion to 34 in buildscript > ext
 
-<img width="545" alt="add kotlinVersion above 1.7.0" src="https://github.com/AmityCo/Amity-Social-UIKit-React-Native-CLI-OpenSource/assets/155952277/1a8618fa-6da3-4a37-8bb8-442119e0b536">
+<img width="545" alt="android/build.gradle configuration" src="https://github.com/AmityCo/Amity-Social-UIKit-React-Native-CLI-OpenSource/assets/33589608/9d77c788-2c31-4a7a-a852-32b0f721727d">
 
 ### Add Camera permission (iOS)
 
@@ -122,8 +122,12 @@ Add following permissions to `info.plist` file (ios/{YourAppName}/Info.plist)
 ### Add Camera permission (Android)
 
 Add following permissions to `AndroidManifest.xml` file (android/app/src/main/AndroidManifest.xml)
+ <uses-feature android:name="android.hardware.camera"/>
+ <uses-feature android:name="android.hardware.camera.autofocus"/>
  <uses-permission android:name="android.permission.CAMERA" /> 
  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+ <uses-permission android:name="android.permission.FLASHLIGHT"/>
+ <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 ### Usage
 
