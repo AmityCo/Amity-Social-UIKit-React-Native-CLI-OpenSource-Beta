@@ -43,7 +43,7 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
   const [isEnding, setIsEnding] = useState<boolean>(false);
   const [post, setPost] = useState<Amity.Post | null>(null);
 
-  const [frontCamera, setFrontCamera] = useState<boolean>(true);
+  const [frontCamera, setFrontCamera] = useState<boolean>(false);
 
   const streamRef = useRef(null);
   const sheetRef = useRef<BottomSheetMethods>(null);
