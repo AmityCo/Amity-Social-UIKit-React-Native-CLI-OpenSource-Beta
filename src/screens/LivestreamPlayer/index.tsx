@@ -9,6 +9,25 @@ import { RootStackParamList } from '../../routes/RouteParamList';
 import { StreamRepository } from '@amityco/ts-sdk-react-native';
 import LivestreamEndedView from '../../components/LivestreamSection/LivestreamEndedView';
 
+type LivestreamFormatWithRTMP = Pick<
+  Amity.Stream,
+  'watcherUrl'
+>['watcherUrl'] & {
+  rtmp?: {
+    url: string;
+    components: {
+      origin: string;
+      appName: string;
+      streamName: string;
+      query: string;
+    };
+  };
+};
+
+type LivestreamWithRTMP = Omit<Amity.Stream, 'watcherUrl'> & {
+  watcherUrl: LivestreamFormatWithRTMP;
+};
+
 const LiveStreamPlayer = () => {
   const ref = useRef(null);
   const styles = useStyles();
@@ -16,7 +35,7 @@ const LiveStreamPlayer = () => {
 
   const { streamId } = route.params;
 
-  const [stream, setStream] = useState<Amity.Stream>();
+  const [stream, setStream] = useState<LivestreamWithRTMP>();
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const naviation = useNavigation();
