@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { NodePlayer } from 'react-native-nodemediaclient';
 import { useStyles } from './styles';
 import { playIcon, pauseIcon } from '../../../src/svg/svg-xml-list';
@@ -8,8 +8,6 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../routes/RouteParamList';
 import { StreamRepository } from '@amityco/ts-sdk-react-native';
 import LivestreamEndedView from '../../components/LivestreamSection/LivestreamEndedView';
-import { useTheme } from 'react-native-paper';
-import type { MyMD3Theme } from '../../providers/amity-ui-kit-provider';
 import { closeIcon } from '../../svg/svg-xml-list';
 
 type LivestreamFormatWithRTMP = Pick<
@@ -35,7 +33,6 @@ const LiveStreamPlayer = () => {
   const ref = useRef(null);
   const styles = useStyles();
   const route = useRoute<RouteProp<RootStackParamList, 'LivestreamPlayer'>>();
-  const theme = useTheme() as MyMD3Theme;
 
   const { streamId } = route.params;
 
