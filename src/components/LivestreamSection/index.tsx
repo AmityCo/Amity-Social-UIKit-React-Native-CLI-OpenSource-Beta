@@ -7,19 +7,15 @@ import {
   ImageSourcePropType,
 } from 'react-native';
 import React, { useEffect, useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { FileRepository, StreamRepository } from '@amityco/ts-sdk-react-native';
 import { useStyles } from './styles';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import { RootStackParamList } from '../../routes/RouteParamList';
 import { SvgXml } from 'react-native-svg';
 import { exclamationIcon, playBtn } from '../../svg/svg-xml-list';
-
 import LivestreamEndedView from './LivestreamEndedView';
-
-import Video from 'react-native-video';
-import { useDispatch } from 'react-redux';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 interface ILivestreamSection {
   streamId: Amity.Stream['streamId'];
@@ -33,15 +29,11 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
       NativeStackNavigationProp<RootStackParamList, 'VideoPlayer'>
     >();
 
-  const videoPlayerRef = React.useRef<Video>(null);
-
-  const [livestream, setLivestream] = useState<Amity.Stream>();
-
   const dispatch = useDispatch();
 
+  const [livestream, setLivestream] = useState<Amity.Stream>();
   const [thumbnailUrl, setThumbnailUrl] = useState<ImageSourcePropType>();
   const [livestreamUrl, setLivestreamUrl] = useState<string>('');
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const onPlayLivestream = useCallback(() => {
     navigation.navigate('LivestreamPlayer', { streamId: livestream.streamId });
@@ -49,22 +41,15 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
 
   const onPlayVideo = useCallback(() => {
     if (Platform.OS === 'ios') {
-      setIsPlaying(true);
-      setTimeout(() => {
-        if (videoPlayerRef.current) {
-          videoPlayerRef.current.presentFullscreenPlayer();
-        }
-      }, 100);
+      navigation.navigate('LivestreamRecordedPlayer', {
+        source: livestreamUrl,
+      });
     } else {
       navigation.navigate('VideoPlayer', {
         source: livestreamUrl,
       });
     }
   }, [livestreamUrl, navigation]);
-
-  const onClosePlayer = useCallback(() => {
-    setIsPlaying(false);
-  }, [setIsPlaying]);
 
   const getLivestreamThumbnail = async (currentStream: Amity.Stream) => {
     const defaultThumbnail = require('../../../assets/images/default-livestream-thumbnail.png');
@@ -136,17 +121,19 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
         )}
 
         {livestream.status === 'recorded' && thumbnailUrl && (
-          <View key={livestream.streamId} style={styles.streamLiveContainer}>
-            <Image source={thumbnailUrl} style={styles.streamImageCover} />
-            <View style={styles.streamStatus}>
-              <Text style={styles.streamStatusText}>RECORDED</Text>
+          <View key={livestream.streamId} style={styles.streamRecoredContainer}>
+            <View style={styles.streamRecoredPreviewContainer}>
+              <Image source={thumbnailUrl} style={styles.streamImageCover} />
+              <View style={styles.streamStatus}>
+                <Text style={styles.streamStatusText}>RECORDED</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.streamPlayButton}
+                onPress={onPlayVideo}
+              >
+                <SvgXml xml={playBtn} width="50" height="50" />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={styles.streamPlayButton}
-              onPress={onPlayVideo}
-            >
-              <SvgXml xml={playBtn} width="50" height="50" />
-            </TouchableOpacity>
           </View>
         )}
 
@@ -165,15 +152,6 @@ const LivestreamSection: React.FC<ILivestreamSection> = ({ streamId }) => {
               </TouchableOpacity>
             </View>
           </View>
-        )}
-
-        {isPlaying && livestreamUrl && (
-          <Video
-            source={{ uri: livestreamUrl }}
-            onFullscreenPlayerDidDismiss={onClosePlayer}
-            ref={videoPlayerRef}
-            fullscreen={true}
-          />
         )}
       </View>
     );

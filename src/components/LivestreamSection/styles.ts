@@ -30,6 +30,14 @@ export const useStyles = () => {
       justifyContent: 'center',
       alignItems: 'center',
     },
+    streamRecoredContainer: {
+      ...streamContainer,
+    },
+    streamRecoredPreviewContainer: {
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
     streamUnavaliableContainer: {
       ...streamContainer,
       backgroundColor: '#000000',
@@ -76,6 +84,14 @@ export const useStyles = () => {
       transform: [{ translateX: -50 }, { translateY: -50 }],
       paddingHorizontal: 26,
       paddingVertical: 20,
+    },
+    loadingOverlay: {
+      width: '100%',
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      zIndex: -1,
     },
   });
   return styles;

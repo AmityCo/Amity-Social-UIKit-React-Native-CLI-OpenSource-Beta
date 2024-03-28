@@ -65,4 +65,5 @@ export type RootStackParamList = {
   PendingPosts: { communityId: string; isModerator: boolean };
   ReactionList: { referenceId: string; referenceType: string };
   LivestreamPlayer: { streamId: string };
+  LivestreamRecordedPlayer: { source: string };
 };

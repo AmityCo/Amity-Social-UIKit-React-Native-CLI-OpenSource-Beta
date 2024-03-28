@@ -12,8 +12,13 @@ import type { MyMD3Theme } from '../../providers/amity-ui-kit-provider';
 interface IBackBtn {
   onPress?: () => any;
   goBack?: boolean;
+  color?: string;
 }
-export default function BackButton({ onPress, goBack = true }: IBackBtn) {
+export default function BackButton({
+  onPress,
+  goBack = true,
+  color,
+}: IBackBtn) {
   const theme = useTheme() as MyMD3Theme;
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   return (
@@ -26,7 +31,11 @@ export default function BackButton({ onPress, goBack = true }: IBackBtn) {
         onPress && onPress();
       }}
     >
-      <SvgXml xml={arrowBack(theme.colors.base)} width={24} height={20} />
+      <SvgXml
+        xml={arrowBack(color || theme.colors.base)}
+        width={24}
+        height={20}
+      />
     </TouchableOpacity>
   );
 }

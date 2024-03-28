@@ -39,6 +39,7 @@ import ReactionListScreen from '../screens/ReactionListScreen/ReactionListScreen
 import CreateLivestream from '../screens/CreateLivestream';
 import LivestreamPlayer from '../screens/LivestreamPlayer';
 import CloseButton from '../components/CloseButton';
+import LivestreamRecordedPlayer from '../screens/LivestreamRecordedPlayer';
 
 export default function SocialNavigator() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -231,6 +232,17 @@ export default function SocialNavigator() {
             name="LivestreamPlayer"
             component={LivestreamPlayer}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="LivestreamRecordedPlayer"
+            component={LivestreamRecordedPlayer}
+            options={{
+              headerLeft: () => <BackButton color="#FFFFFF" />,
+              headerStyle: {
+                backgroundColor: 'transparent',
+              },
+              title: '',
+            }}
           />
         </Stack.Navigator>
       )}
