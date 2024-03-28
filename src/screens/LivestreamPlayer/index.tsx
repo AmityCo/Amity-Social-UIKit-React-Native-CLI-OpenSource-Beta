@@ -8,6 +8,9 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../routes/RouteParamList';
 import { StreamRepository } from '@amityco/ts-sdk-react-native';
 import LivestreamEndedView from '../../components/LivestreamSection/LivestreamEndedView';
+import { useTheme } from 'react-native-paper';
+import type { MyMD3Theme } from '../../providers/amity-ui-kit-provider';
+import { closeIcon } from '../../svg/svg-xml-list';
 
 type LivestreamFormatWithRTMP = Pick<
   Amity.Stream,
@@ -32,11 +35,12 @@ const LiveStreamPlayer = () => {
   const ref = useRef(null);
   const styles = useStyles();
   const route = useRoute<RouteProp<RootStackParamList, 'LivestreamPlayer'>>();
+  const theme = useTheme() as MyMD3Theme;
 
   const { streamId } = route.params;
 
   const [stream, setStream] = useState<LivestreamWithRTMP>();
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   const naviation = useNavigation();
 
@@ -69,12 +73,11 @@ const LiveStreamPlayer = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => naviation.goBack()}
-        style={styles.closeButton}
-      >
-        <Image source={require('./../../../assets/icon/ClosePlayer.png')} />
-      </TouchableOpacity>
+      <View style={styles.closeButton}>
+        <TouchableOpacity style={styles.closeButton} onPress={naviation.goBack}>
+          <SvgXml xml={closeIcon('#FFFFFF')} width="16" height="16" />
+        </TouchableOpacity>
+      </View>
       {stream && stream.status && stream.status === 'ended' ? (
         <>
           <View style={styles.streamEndedWrap}>

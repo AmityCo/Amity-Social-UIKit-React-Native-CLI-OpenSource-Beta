@@ -5,7 +5,6 @@ export const useStyles = () => {
     container: {
       backgroundColor: '#000000',
       flex: 1,
-      position: 'relative',
     },
     topSectionWrap: {
       position: 'absolute',
@@ -54,9 +53,9 @@ export const useStyles = () => {
     },
     closeButton: {
       position: 'absolute',
-      top: 60,
+      top: 35,
       right: 16,
-      zIndex: 200,
+      zIndex: 100,
     },
   });
 
