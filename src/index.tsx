@@ -1,7 +1,7 @@
 import { NativeModules, Platform } from 'react-native';
 import AmityUiKitProvider from './providers/amity-ui-kit-provider';
 import AmityUiKitSocial from './routes/SocialNavigator';
-import AmityStoryTabComponent from './v4/PublicApi/AmityStoryTabComponent/AmityStoryTabComponent';
+import { AmityStoryTabComponent, AmityCreateStoryPage } from './v4';
 import { AmityStoryTabComponentEnum } from './v4/PublicApi/types';
 
 const LINKING_ERROR =
@@ -29,4 +29,5 @@ export {
   AmityUiKitSocial,
   AmityStoryTabComponent,
   AmityStoryTabComponentEnum,
+  AmityCreateStoryPage,
 };

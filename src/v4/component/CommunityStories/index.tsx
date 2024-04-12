@@ -4,19 +4,18 @@ import { useStyles } from './styles';
 import AmityStory from '../../../v4/component/StoryKit';
 import { useStory } from '../../hook/useStory';
 import ContentLoader, { Circle } from 'react-content-loader/native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SvgXml } from 'react-native-svg';
 import {
   storyCircleCreatePlusIcon,
   storyRing,
 } from '../../../svg/svg-xml-list';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../../routes/RouteParamList';
 import { useFile } from '../../hook/useFile';
 import useAuth from '../../../hooks/useAuth';
 import { ImageSizeState } from '../../enum/imageSizeState';
 import { useStoryPermission } from '../../hook/useStoryPermission';
 import { isCommunityModerator } from '../../../util/permission';
+import AmityCreateStoryPage from '../../PublicApi/AmityCreateStoryPage/AmityCreateStoryPage';
 
 interface ICommunityStories {
   communityId: string;
@@ -32,8 +31,6 @@ const CommunityStories = ({
   displayName,
   avatarFileId,
 }: ICommunityStories) => {
-  const navigation =
-    useNavigation() as NativeStackNavigationProp<RootStackParamList>;
   const styles = useStyles();
   const { client } = useAuth();
   const hasStoryPermission = useStoryPermission(communityId);
@@ -41,6 +38,7 @@ const CommunityStories = ({
   const { getStories, stories, loading } = useStory();
   const { getImage } = useFile();
   const [avatarUrl, setAvatarUrl] = useState(undefined);
+  const [showCreateStoryPage, setShowCreateStoryPage] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -115,16 +113,12 @@ const CommunityStories = ({
 
   useEffect(() => {
     stories.length > 0 && formatStory();
+    return () => setShowCreateStoryPage(false);
   }, [formatStory, stories.length]);
 
   const onPress = useCallback(() => {
-    hasStoryPermission &&
-      navigation.navigate('Camera', {
-        communityId,
-        communityName: displayName,
-        communityAvatar: avatarUrl,
-      });
-  }, [avatarUrl, communityId, displayName, hasStoryPermission, navigation]);
+    hasStoryPermission && setShowCreateStoryPage(true);
+  }, [hasStoryPermission]);
 
   const renderCommunityStory = () => {
     if (loading) {
@@ -190,7 +184,14 @@ const CommunityStories = ({
     return null;
   };
 
-  return <View style={styles.container}>{renderCommunityStory()}</View>;
+  return (
+    <View style={styles.container}>
+      {renderCommunityStory()}
+      {showCreateStoryPage && (
+        <AmityCreateStoryPage targetId={communityId} targetType="community" />
+      )}
+    </View>
+  );
 };
 
 export default memo(CommunityStories);

@@ -221,15 +221,17 @@ export default function SocialNavigator() {
             }}
           />
           <Stack.Screen
-            name="Camera"
-            component={CameraScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
             name="CameraPreview"
             component={CameraPreviewScreen}
             options={{ headerShown: false }}
           />
+          <Stack.Group screenOptions={{ animation: 'slide_from_bottom' }}>
+            <Stack.Screen
+              name="Camera"
+              component={CameraScreen}
+              options={{ headerShown: false }}
+            />
+          </Stack.Group>
         </Stack.Navigator>
       )}
       <PostTypeChoiceModal />

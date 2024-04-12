@@ -7,3 +7,8 @@ export interface AmityStoryTabComponentType {
   type: AmityStoryTabComponentEnum;
   targetId?: string;
 }
+
+export interface ICreateStoryPage {
+  targetId: string;
+  targetType: Amity.StoryTargetType;
+}
