@@ -16,9 +16,7 @@ const AmityCreateStoryPage: FC<ICreateStoryPage> = ({
   const navigation =
     useNavigation() as NativeStackNavigationProp<RootStackParamList>;
   const [isLoading, setIsLoading] = useState(false);
-  console.log('aa');
   useLayoutEffect(() => {
-    console.log('Gg');
     if (targetType !== 'community' || !targetId) return;
     setIsLoading(true);
     CommunityRepository.getCommunity(
