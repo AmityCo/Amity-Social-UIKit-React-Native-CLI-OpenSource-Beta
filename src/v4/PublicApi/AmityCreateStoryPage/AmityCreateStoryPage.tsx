@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../routes/RouteParamList';
 import { CommunityRepository } from '@amityco/ts-sdk-react-native';
-import { ActivityIndicator, Text } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { ICreateStoryPage } from '../types';
 import { useFile } from '../../hook/useFile';
 import { ImageSizeState } from '../../enum/imageSizeState';
@@ -45,7 +45,7 @@ const AmityCreateStoryPage: FC<ICreateStoryPage> = ({
       <ActivityIndicator animating={isLoading} size="large" color="grey" />
     );
   }
-  return <Text>GG</Text>;
+  return null;
 };
 
 export default memo(AmityCreateStoryPage);
