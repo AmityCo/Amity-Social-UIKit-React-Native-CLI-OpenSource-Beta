@@ -1,21 +1,22 @@
-import React, { FC, memo, useLayoutEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../../routes/RouteParamList';
+import React, { useLayoutEffect, useState } from 'react';
 import { CommunityRepository } from '@amityco/ts-sdk-react-native';
-import { ActivityIndicator } from 'react-native';
-import { ICreateStoryPage } from '../types';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { useFile } from '../../hook/useFile';
 import { ImageSizeState } from '../../enum/imageSizeState';
+import CameraScreen from '../../screen/Camera/CameraScreen';
+import { useRequestPermission } from '../../hook/useCamera';
 
-const AmityCreateStoryPage: FC<ICreateStoryPage> = ({
-  targetId,
-  targetType,
-}) => {
+interface IStoryCamera extends Amity.Community {
+  communityAvatar: string;
+}
+
+const AmityCreateStoryPage = ({ navigation, route }) => {
+  const { targetId, targetType } = route.params;
+  useRequestPermission();
+
   const { getImage } = useFile();
-  const navigation =
-    useNavigation() as NativeStackNavigationProp<RootStackParamList>;
   const [isLoading, setIsLoading] = useState(false);
+  const [communityData, setCommunityData] = useState<IStoryCamera>(null);
   useLayoutEffect(() => {
     if (targetType !== 'community' || !targetId) return;
     setIsLoading(true);
@@ -28,24 +29,39 @@ const AmityCreateStoryPage: FC<ICreateStoryPage> = ({
             fileId: data.avatarFileId,
             imageSize: ImageSizeState.small,
           });
-
-          navigation.navigate('Camera', {
-            communityId: targetId,
-            communityName: data?.displayName,
-            communityAvatar: avatarImage,
-          });
+          setCommunityData({ ...data, communityAvatar: avatarImage });
           setIsLoading(false);
         }
       }
     );
-  }, [getImage, navigation, targetId, targetType]);
+  }, [getImage, targetId, targetType]);
 
   if (isLoading) {
     return (
-      <ActivityIndicator animating={isLoading} size="large" color="grey" />
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator animating={isLoading} size="large" color="white" />
+      </View>
     );
   }
+  if (communityData)
+    return (
+      <CameraScreen
+        navigation={navigation}
+        communityId={targetId}
+        communityName={communityData?.displayName ?? ''}
+        communityAvatar={communityData?.communityAvatar ?? ''}
+      />
+    );
   return null;
 };
 
-export default memo(AmityCreateStoryPage);
+const styles = StyleSheet.create({
+  loadingContainer: {
+    backgroundColor: '#000',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+
+export default AmityCreateStoryPage;

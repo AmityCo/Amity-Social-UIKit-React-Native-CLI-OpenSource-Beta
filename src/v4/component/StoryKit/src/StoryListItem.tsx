@@ -45,7 +45,6 @@ import { StoryRepository } from '@amityco/ts-sdk-react-native';
 import CommentList from '../../Social/CommentList/CommentList';
 import { useStoryPermission } from '../../../hook/useStoryPermission';
 import { useConfigImageUri } from '../../../hook/useConfigImageUri';
-import AmityCreateStoryPage from '../../../PublicApi/AmityCreateStoryPage/AmityCreateStoryPage';
 
 export const StoryListItem = ({
   index,
@@ -130,7 +129,6 @@ export const StoryListItem = ({
   const { handleReaction } = useStory();
   const prevCurrentPage = usePrevious(currentPage);
   const [muted, setMuted] = useState(false);
-  const [showCreateStoryPage, setShowCreateStoryPage] = useState(false);
   const hasStoryImpressionPermission = isModerator || content[current].isOwner;
 
   const muteIcon = useConfigImageUri({
@@ -184,7 +182,6 @@ export const StoryListItem = ({
     });
     setContent(data);
     start();
-    return () => setShowCreateStoryPage(false);
   }, [currentPage]);
 
   const prevCurrent = usePrevious(current);
@@ -286,8 +283,11 @@ export const StoryListItem = ({
 
   const onPressAvatar = useCallback(() => {
     if (hasStoryPermission) {
-      setShowCreateStoryPage(true);
       onClosePress();
+      navigation.navigate('AmityCreateStoryPage', {
+        targetId: userId,
+        targetType: 'community',
+      });
     }
   }, [hasStoryPermission]);
 
@@ -650,9 +650,6 @@ export const StoryListItem = ({
           </TouchableOpacity>
         </View>
       </BottomSheet>
-      {showCreateStoryPage && (
-        <AmityCreateStoryPage targetType="community" targetId={userId} />
-      )}
     </>
   );
 };

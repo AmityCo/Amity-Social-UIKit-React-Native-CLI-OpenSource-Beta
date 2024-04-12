@@ -7,7 +7,14 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import React, { useCallback, useState, useRef, useEffect } from 'react';
+import React, {
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+  FC,
+  memo,
+} from 'react';
 import {
   useCameraDevice,
   Camera,
@@ -16,7 +23,6 @@ import {
   useCameraFormat,
 } from 'react-native-vision-camera';
 import { useStyles } from './styles';
-import { useRequestPermission } from '../../hook/useCamera';
 import { SvgXml } from 'react-native-svg';
 import {
   closeIcon,
@@ -29,16 +35,27 @@ import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
 import * as Progress from 'react-native-progress';
 import { msToString } from '../../../util/timeUtil';
 import { StoryType } from '../../enum';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+interface IStoryCamera {
+  communityId: string;
+  communityName: string;
+  communityAvatar: string;
+  navigation: NativeStackNavigationProp<any>;
+}
 
 enum ACTIVE_SWITCH {
   camera = 'camera',
   video = 'video',
 }
 
-const CameraScreen = ({ navigation, route }) => {
+const CameraScreen: FC<IStoryCamera> = ({
+  communityId,
+  communityAvatar,
+  communityName,
+  navigation,
+}) => {
   const styles = useStyles();
-  const communityData = route.params;
-  useRequestPermission();
   const backCamera = useCameraDevice('back');
   const frontCamera = useCameraDevice('front');
   const cameraRef = useRef<Camera>(null);
@@ -115,10 +132,10 @@ const CameraScreen = ({ navigation, route }) => {
       const data = { ...cameraData, uri: uri, name: name };
       navigation.navigate('CameraPreview', {
         type: type,
-        data: { ...data, ...communityData },
+        data: { ...data, communityAvatar, communityId, communityName },
       });
     },
-    [communityData, navigation]
+    [communityAvatar, communityId, communityName, navigation]
   );
 
   const onPressCameraCapture = useCallback(async () => {
@@ -281,4 +298,4 @@ const CameraScreen = ({ navigation, route }) => {
   );
 };
 
-export default CameraScreen;
+export default memo(CameraScreen);
