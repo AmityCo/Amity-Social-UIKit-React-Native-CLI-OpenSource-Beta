@@ -78,5 +78,9 @@ export type RootStackParamList = {
     targetId: string;
     targetType: Amity.StoryTargetType;
   };
-  CameraPreview: { type: 'photo' | 'video'; data: any };
+  AmityDraftStoryPage: {
+    targetId: string;
+    targetType: Amity.StoryTargetType;
+    mediaType: any;
+  };
 };

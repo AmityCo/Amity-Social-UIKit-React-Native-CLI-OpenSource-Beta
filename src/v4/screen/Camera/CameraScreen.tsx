@@ -36,12 +36,11 @@ import * as Progress from 'react-native-progress';
 import { msToString } from '../../../util/timeUtil';
 import { StoryType } from '../../enum';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../routes/RouteParamList';
 
 interface IStoryCamera {
   communityId: string;
-  communityName: string;
-  communityAvatar: string;
-  navigation: NativeStackNavigationProp<any>;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 enum ACTIVE_SWITCH {
@@ -49,12 +48,7 @@ enum ACTIVE_SWITCH {
   video = 'video',
 }
 
-const CameraScreen: FC<IStoryCamera> = ({
-  communityId,
-  communityAvatar,
-  communityName,
-  navigation,
-}) => {
+const CameraScreen: FC<IStoryCamera> = ({ communityId, navigation }) => {
   const styles = useStyles();
   const backCamera = useCameraDevice('back');
   const frontCamera = useCameraDevice('front');
@@ -120,7 +114,7 @@ const CameraScreen: FC<IStoryCamera> = ({
   }, []);
 
   const onFinishCapture = useCallback(
-    (cameraData: PhotoFile | VideoFile | undefined, type: StoryType) => {
+    (cameraData: PhotoFile | VideoFile | undefined) => {
       setTotalTime(0);
       if (!cameraData)
         return Alert.alert('Error', 'Error on camera, please try again');
@@ -130,12 +124,13 @@ const CameraScreen: FC<IStoryCamera> = ({
         android: `file://${cameraData.path}`,
       });
       const data = { ...cameraData, uri: uri, name: name };
-      navigation.navigate('CameraPreview', {
-        type: type,
-        data: { ...data, communityAvatar, communityId, communityName },
+      navigation.navigate('AmityDraftStoryPage', {
+        targetId: communityId,
+        targetType: 'community',
+        mediaType: data,
       });
     },
-    [communityAvatar, communityId, communityName, navigation]
+    [communityId, navigation]
   );
 
   const onPressCameraCapture = useCallback(async () => {
@@ -144,13 +139,13 @@ const CameraScreen: FC<IStoryCamera> = ({
       flash: flashOnState ? 'on' : 'off',
       enableShutterSound: false,
     });
-    onFinishCapture(photo, StoryType.photo);
+    onFinishCapture(photo);
   }, [flashOnState, onFinishCapture]);
 
   const onStartRecord = useCallback(() => {
     setIsRecording(true);
     cameraRef?.current?.startRecording({
-      onRecordingFinished: (video) => onFinishCapture(video, StoryType.video),
+      onRecordingFinished: (video) => onFinishCapture(video),
       onRecordingError: (error) =>
         Alert.alert('Video Record Error', error.message),
       fileType: 'mp4',
@@ -213,7 +208,7 @@ const CameraScreen: FC<IStoryCamera> = ({
   }, [backCamera, frontCamera]);
 
   const onPressGallery = useCallback(async () => {
-    const type = isCamera ? StoryType.photo : StoryType.video;
+    const type = isCamera ? 'photo' : StoryType.video;
     const result: ImagePicker.ImagePickerResponse = await launchImageLibrary({
       mediaType: type,
       quality: 1,
@@ -222,7 +217,7 @@ const CameraScreen: FC<IStoryCamera> = ({
     if (!result.didCancel && result.assets && result.assets.length > 0) {
       const data = { ...result.assets[0], path: result.assets[0].uri };
       if (data) {
-        onFinishCapture(data as PhotoFile | VideoFile, type);
+        onFinishCapture(data as PhotoFile | VideoFile);
       } else {
         Alert.alert('Error on media selection');
       }

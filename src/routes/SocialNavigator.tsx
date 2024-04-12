@@ -36,8 +36,7 @@ import VideoPlayerFull from '../screens/VideoPlayerFullScreen';
 import PostTypeChoiceModal from '../components/PostTypeChoiceModal/PostTypeChoiceModal';
 import CreatePoll from '../screens/CreatePoll/CreatePoll';
 import ReactionListScreen from '../screens/ReactionListScreen/ReactionListScreen';
-import CameraPreviewScreen from '../v4/screen/CameraPreview/CameraPreviewScreen';
-import { AmityCreateStoryPage } from '../v4';
+import { AmityCreateStoryPage, AmityDraftStoryPage } from '../v4';
 
 export default function SocialNavigator() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -221,8 +220,8 @@ export default function SocialNavigator() {
             }}
           />
           <Stack.Screen
-            name="CameraPreview"
-            component={CameraPreviewScreen}
+            name="AmityDraftStoryPage"
+            component={AmityDraftStoryPage}
             options={{ headerShown: false }}
           />
           <Stack.Group screenOptions={{ animation: 'slide_from_bottom' }}>
