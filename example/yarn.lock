@@ -4973,10 +4973,15 @@ react-native-netinfo@^1.1.0:
   resolved "https://registry.yarnpkg.com/react-native-netinfo/-/react-native-netinfo-1.1.0.tgz#343a4a9413006493f350bc7923688bb3315c3dce"
   integrity sha512-muGzEvfCm9i+MF1qgPF1LsUmRxaTUWQ9i2TTbBoE/DBfsprv4Ds27iYLQvAgX5QzAMJm+iYKCq+3QN/hvPxrsQ==
 
-react-native-nodemediaclient@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/react-native-nodemediaclient/-/react-native-nodemediaclient-0.3.3.tgz#99168049816c62736de8c4fc7e112ca40ea64ebe"
-  integrity sha512-xyy5G3ueCAVO563IYGVHCS8cX9P+GSdSWyrejAEPSzePeVfc6V/+zrfbkEiqMqUw4ru1vSvbG4cgapwhE8LtSw==
+react-native-nodemediaclient@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/react-native-nodemediaclient/-/react-native-nodemediaclient-0.3.4.tgz#0a4539bcaacb4044c761623e705ded88d92db7f2"
+  integrity sha512-Gs5XRk8TR5GLYS/KZmXl5vI6hC000NlM+/uPuGAtK3qIrHC53myR3fqRIz+u1RqFkNi1TFIIApDoPCuXHwpeOQ==
+
+react-native-rtmp-publisher@^0.4.7:
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/react-native-rtmp-publisher/-/react-native-rtmp-publisher-0.4.7.tgz#771ce6172aed3e923bd5cf53d1756aecb95ad85d"
+  integrity sha512-sqc67p+pbJ9Gnc51GXfP4okm4vdWz+utsTfQvutVKa/ROG2lpUzo6jVvzniMNwp4GrZdCegHrl23ITmNfSyfzg==
 
 react-native-safe-area-context@^4.7.2:
   version "4.9.0"

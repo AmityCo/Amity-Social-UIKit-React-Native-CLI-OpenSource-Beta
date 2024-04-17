@@ -18,10 +18,11 @@ import { StreamRepository, PostRepository } from '@amityco/ts-sdk-react-native';
 import BottomSheet, { BottomSheetMethods } from '@devvie/bottom-sheet';
 import useImagePicker from '../../../src/hooks/useImagePicker';
 
-import { NodePublisher } from 'react-native-nodemediaclient';
 import { uploadImageFile } from '../../../src/providers/file-provider';
 import { RootStackParamList } from '../../routes/RouteParamList';
 import { NavigationProp, RouteProp } from '@react-navigation/native';
+
+import RTMPPublisher from 'react-native-rtmp-publisher';
 
 interface CreateLivestreamProps {
   navigation: NavigationProp<RootStackParamList, 'CreateLivestream'>;
@@ -32,6 +33,8 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
   const { targetId, targetType, targetName } = route.params;
 
   const styles = useStyles();
+
+  const publisherRef = useRef(null);
 
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -140,7 +143,8 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
         const { data: newPost } = await createStreamPost(newStream);
         setPost(newPost);
 
-        streamRef?.current.start();
+        publisherRef.current.startStream();
+        // streamRef?.current.start();
         onStreamConnectionSuccess();
       }
     } else emptyTitleAlert();
@@ -159,7 +163,8 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
       setIsEnding(true);
       await StreamRepository.disposeStream(stream.streamId);
 
-      streamRef?.current.stop();
+      // streamRef?.current.stop();
+      publisherRef.current.stopStream();
       setIsLive(false);
       setStream(null);
       setTitle(undefined);
@@ -210,11 +215,46 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
     if (Platform.OS === 'android') requestPermission();
   }, []);
 
+  // useEffect(() => {
+  //   console.log('publisherRef', publisherRef.current);
+  // }, [publisherRef]);
+
   return (
     <>
       <View style={styles.container}>
         <View style={styles.cameraContainer}>
-          <NodePublisher
+          <RTMPPublisher
+            ref={publisherRef}
+            streamURL={
+              stream
+                ? stream.streamerUrl.components.origin +
+                  '/' +
+                  stream.streamerUrl.components.appName
+                : ''
+            }
+            streamName={
+              stream
+                ? stream.streamerUrl.components.streamName +
+                  '?' +
+                  stream.streamerUrl.components.query
+                : ''
+            }
+            onConnectionSuccess={() => {
+              console.log('connectted');
+            }}
+            onConnectionFailed={() => {
+              console.log('connection failed');
+            }}
+            onConnectionStarted={() => {
+              console.log('connection started');
+            }}
+            onDisconnect={() => {
+              console.log('disconnected');
+            }}
+          />
+        </View>
+        <View style={styles.cameraContainerForeground}>
+          {/* <NodePublisher
             ref={streamRef}
             style={{ flex: 1 }}
             url={stream?.streamerUrl?.url || ''}
@@ -240,81 +280,83 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
             keyFrameInterval={2}
             volume={1.0}
             videoOrientation={NodePublisher.VIDEO_ORIENTATION_PORTRAIT}
-          />
-          {isEnding ? (
-            <View style={styles.endingStreamWrap}>
-              <ActivityIndicator size="large" color="#FFFFFF" />
-              <Text style={styles.endingStreamText}>Ending Live Stream</Text>
-            </View>
-          ) : isLive ? (
-            <View style={styles.streamingWrap}>
-              <View style={styles.streamingTimerWrap}>
-                <Text style={styles.streamingTimer}>
-                  {isConnecting ? 'Connecting...' : `LIVE ${calculateTime()}`}
-                </Text>
+          /> */}
+          <View style={styles.cameraContainerForegroundInner}>
+            {isEnding ? (
+              <View style={styles.endingStreamWrap}>
+                <ActivityIndicator size="large" color="#FFFFFF" />
+                <Text style={styles.endingStreamText}>Ending Live Stream</Text>
               </View>
-            </View>
-          ) : (
-            <View style={styles.idleWrap}>
-              <View style={styles.idleWraplInner}>
-                <View style={styles.optionTopWrap}>
-                  {renderOptionIcon(closeIcon('white'), () =>
-                    navigation.goBack()
-                  )}
-                  <View style={styles.optionTopRightWrap}>
-                    {renderOptionIcon(syncIcon('white'), onSwitchCamera)}
-                    <TouchableOpacity
-                      style={styles.optionIcon}
-                      onPress={() => {
-                        if (imageUri && sheetRef.current)
-                          sheetRef.current?.open();
-                        else openImageGallery();
-                      }}
-                    >
-                      {imageUri ? (
-                        <Image
-                          source={{ uri: imageUri }}
-                          style={styles.thumbnailImage}
-                        />
-                      ) : (
-                        <View style={styles.optionIconInner}>
-                          <SvgXml
-                            xml={editThumbnailIcon('#FFFFFF')}
-                            width={18}
-                            height={18}
+            ) : isLive ? (
+              <View style={styles.streamingWrap}>
+                <View style={styles.streamingTimerWrap}>
+                  <Text style={styles.streamingTimer}>
+                    {isConnecting ? 'Connecting...' : `LIVE ${calculateTime()}`}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <View style={styles.idleWrap}>
+                <View style={styles.idleWraplInner}>
+                  <View style={styles.optionTopWrap}>
+                    {renderOptionIcon(closeIcon('white'), () =>
+                      navigation.goBack()
+                    )}
+                    <View style={styles.optionTopRightWrap}>
+                      {renderOptionIcon(syncIcon('white'), onSwitchCamera)}
+                      <TouchableOpacity
+                        style={styles.optionIcon}
+                        onPress={() => {
+                          if (imageUri && sheetRef.current)
+                            sheetRef.current?.open();
+                          else openImageGallery();
+                        }}
+                      >
+                        {imageUri ? (
+                          <Image
+                            source={{ uri: imageUri }}
+                            style={styles.thumbnailImage}
                           />
-                        </View>
-                      )}
-                    </TouchableOpacity>
+                        ) : (
+                          <View style={styles.optionIconInner}>
+                            <SvgXml
+                              xml={editThumbnailIcon('#FFFFFF')}
+                              width={18}
+                              height={18}
+                            />
+                          </View>
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={styles.postTarget}>
+                    <Image
+                      source={require('./../../../assets/icon/Placeholder.png')}
+                      style={styles.avatar}
+                    />
+                    <Text style={styles.targetName}>{targetName}</Text>
+                  </View>
+                  <View style={styles.seperator} />
+                  <View style={styles.detailWrap}>
+                    <TextInput
+                      style={styles.title}
+                      placeholder="Title"
+                      placeholderTextColor={'rgba(255, 255, 255, 0.2)'}
+                      onChangeText={(text) => setTitle(text)}
+                      value={title}
+                    />
+                    <TextInput
+                      style={styles.description}
+                      placeholder="Tap to add post description..."
+                      placeholderTextColor={'rgba(255, 255, 255, 0.2)'}
+                      onChangeText={(text) => setDescription(text)}
+                      value={description}
+                    />
                   </View>
                 </View>
-                <View style={styles.postTarget}>
-                  <Image
-                    source={require('./../../../assets/icon/Placeholder.png')}
-                    style={styles.avatar}
-                  />
-                  <Text style={styles.targetName}>{targetName}</Text>
-                </View>
-                <View style={styles.seperator} />
-                <View style={styles.detailWrap}>
-                  <TextInput
-                    style={styles.title}
-                    placeholder="Title"
-                    placeholderTextColor={'rgba(255, 255, 255, 0.2)'}
-                    onChangeText={(text) => setTitle(text)}
-                    value={title}
-                  />
-                  <TextInput
-                    style={styles.description}
-                    placeholder="Tap to add post description..."
-                    placeholderTextColor={'rgba(255, 255, 255, 0.2)'}
-                    onChangeText={(text) => setDescription(text)}
-                    value={description}
-                  />
-                </View>
               </View>
-            </View>
-          )}
+            )}
+          </View>
         </View>
 
         {!isEnding && (

@@ -3,12 +3,20 @@ import { StyleSheet } from 'react-native';
 export const useStyles = () => {
   const styles = StyleSheet.create({
     container: {
+      position: 'relative',
       height: '100%',
       backgroundColor: '#000000',
     },
-    cameraContainer: {
+    cameraContainer: {},
+    cameraContainerForeground: {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      height: '100%',
+      width: '100%',
+    },
+    cameraContainerForegroundInner: {
       marginTop: '15%',
-      height: '80%',
+      width: '100%',
+      height: '100%',
     },
     livestreamView: {
       flex: 1,
@@ -18,7 +26,6 @@ export const useStyles = () => {
       position: 'absolute',
       width: '100%',
       height: '100%',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -55,7 +62,6 @@ export const useStyles = () => {
       position: 'absolute',
       width: '100%',
       height: '100%',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     idleWraplInner: {
       padding: 16,
@@ -129,6 +135,9 @@ export const useStyles = () => {
       padding: 0,
     },
     footer: {
+      bottom: 10,
+      width: '100%',
+      position: 'absolute',
       backgroundColor: '#000000',
       height: '10%',
     },

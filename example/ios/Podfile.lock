@@ -74,10 +74,13 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
+  - HaishinKit (1.2.7):
+    - Logboard (~> 2.2.2)
   - hermes-engine (0.72.4):
     - hermes-engine/Pre-built (= 0.72.4)
   - hermes-engine/Pre-built (0.72.4)
   - libevent (2.1.12)
+  - Logboard (2.2.4)
   - NodeMediaClient (3.2.7)
   - OpenSSL-Universal (1.1.1100)
   - PromisesObjC (2.3.1)
@@ -394,6 +397,9 @@ PODS:
     - NodeMediaClient (= 3.2.7)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+  - react-native-rtmp-publisher (0.4.7):
+    - HaishinKit (~> 1.2.7)
+    - React-Core
   - react-native-safe-area-context (4.9.0):
     - React-Core
   - react-native-video (6.0.0-beta.5):
@@ -582,6 +588,7 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-nodemediaclient (from `../node_modules/react-native-nodemediaclient`)
+  - react-native-rtmp-publisher (from `../node_modules/react-native-rtmp-publisher`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -621,7 +628,9 @@ SPEC REPOS:
     - Flipper-PeerTalk
     - FlipperKit
     - fmt
+    - HaishinKit
     - libevent
+    - Logboard
     - NodeMediaClient
     - OpenSSL-Universal
     - PromisesObjC
@@ -684,6 +693,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-nodemediaclient:
     :path: "../node_modules/react-native-nodemediaclient"
+  react-native-rtmp-publisher:
+    :path: "../node_modules/react-native-rtmp-publisher"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-video:
@@ -751,8 +762,10 @@ SPEC CHECKSUMS:
   FlipperKit: 2efad7007d6745a3f95e4034d547be637f89d3f6
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  HaishinKit: 5463efd52fa4de2018db95547a5b09ce50495444
   hermes-engine: 81191603c4eaa01f5e4ae5737a9efcf64756c7b2
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  Logboard: 660364cbd45aa42fd79637f0cdfba3c950c613d8
   NodeMediaClient: 2d4a5db55f079801318b769d5a9fbd01c93cd68f
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
@@ -776,6 +789,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: 5e076db26cd81660cfb6db5bcf517cfa12054d45
   react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
   react-native-nodemediaclient: 0d08e4fa19a320091eca814024991cff611e6d05
+  react-native-rtmp-publisher: 50571f7db2de0555316b5d125d650c5af21e14c6
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
   react-native-video: 634ca004e7747638885f40797d5e5052042483e9
   React-NativeModulesApple: edb5ace14f73f4969df6e7b1f3e41bef0012740f
@@ -804,6 +818,6 @@ SPEC CHECKSUMS:
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 27589ab357a59f73e3df28d7c015b13dcd03cbce
+PODFILE CHECKSUM: d321e818eda51b9aa4bfc40877c81996a9677528
 
 COCOAPODS: 1.12.1
