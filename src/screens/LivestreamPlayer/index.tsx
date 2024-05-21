@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { NodePlayer } from 'react-native-nodemediaclient';
+// import { NodePlayer } from 'react-native-nodemediaclient';
 import { useStyles } from './styles';
 import { playIcon, pauseIcon } from '../../../src/svg/svg-xml-list';
 import { SvgXml } from 'react-native-svg';
@@ -88,7 +88,7 @@ const LiveStreamPlayer = () => {
               <Text style={styles.statusText}>LIVE</Text>
             </View>
           </View>
-          {stream && stream.watcherUrl && (
+          {/* {stream && stream.watcherUrl && (
             <NodePlayer
               ref={ref}
               style={{ flex: 1 }}
@@ -97,7 +97,7 @@ const LiveStreamPlayer = () => {
               scaleMode={1}
               bufferTime={500}
             />
-          )}
+          )} */}
           <View style={styles.controller}>
             <TouchableOpacity
               onPress={onPressControlButton}

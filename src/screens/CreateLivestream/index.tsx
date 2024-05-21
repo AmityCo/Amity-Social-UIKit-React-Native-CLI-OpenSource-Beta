@@ -18,7 +18,7 @@ import { StreamRepository, PostRepository } from '@amityco/ts-sdk-react-native';
 import BottomSheet, { BottomSheetMethods } from '@devvie/bottom-sheet';
 import useImagePicker from '../../../src/hooks/useImagePicker';
 
-import { NodePublisher } from 'react-native-nodemediaclient';
+import { ApiVideoLiveStreamView } from '@api.video/react-native-livestream';
 import { uploadImageFile } from '../../../src/providers/file-provider';
 import { RootStackParamList } from '../../routes/RouteParamList';
 import { NavigationProp, RouteProp } from '@react-navigation/native';
@@ -43,7 +43,11 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
   const [isEnding, setIsEnding] = useState<boolean>(false);
   const [post, setPost] = useState<Amity.Post | null>(null);
 
-  const [frontCamera, setFrontCamera] = useState<boolean>(false);
+  const [cameraPosition, setCameraPosition] = useState<'front' | 'back'>(
+    'back'
+  );
+
+  const [androidPermission, setAndroidPermission] = useState<boolean>(false);
 
   const streamRef = useRef(null);
   const sheetRef = useRef<BottomSheetMethods>(null);
@@ -74,6 +78,11 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
           buttonPositive: 'OK',
         }
       );
+
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED)
+        return console.log('Record Audio permission denied');
+
+      setAndroidPermission(true);
     } catch (err) {
       console.warn(err);
     }
@@ -135,12 +144,19 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
       });
 
       if (newStream) {
-        setStream(newStream);
+        const streamUrl =
+          newStream.streamerUrl.components.origin +
+          '/' +
+          newStream.streamerUrl.components.appName;
+        const streamKey =
+          newStream.streamerUrl.components.streamName +
+          '?' +
+          newStream.streamerUrl.components.query;
 
         const { data: newPost } = await createStreamPost(newStream);
         setPost(newPost);
 
-        streamRef?.current.start();
+        streamRef?.current.startStreaming(streamKey, streamUrl);
         onStreamConnectionSuccess();
       }
     } else emptyTitleAlert();
@@ -159,7 +175,8 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
       setIsEnding(true);
       await StreamRepository.disposeStream(stream.streamId);
 
-      streamRef?.current.stop();
+      console.log('Stream disposed');
+      streamRef?.current.stopStreaming();
       setIsLive(false);
       setStream(null);
       setTitle(undefined);
@@ -175,7 +192,7 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
   }, [stream, timer, post, navigation]);
 
   const onSwitchCamera = () => {
-    setFrontCamera((prev) => !prev);
+    setCameraPosition((prev) => (prev === 'back' ? 'front' : 'back'));
   };
 
   const calculateTime = () => {
@@ -214,33 +231,41 @@ const CreateLivestream = ({ navigation, route }: CreateLivestreamProps) => {
     <>
       <View style={styles.container}>
         <View style={styles.cameraContainer}>
-          <NodePublisher
-            ref={streamRef}
-            style={{ flex: 1 }}
-            url={stream?.streamerUrl?.url || ''}
-            audioParam={{
-              codecid: NodePublisher.NMC_CODEC_ID_AAC,
-              profile: NodePublisher.NMC_PROFILE_AUTO,
-              samplerate: 48000,
-              channels: 1,
-              bitrate: 64 * 1000,
-            }}
-            videoParam={{
-              codecid: NodePublisher.NMC_CODEC_ID_H264,
-              profile: NodePublisher.NMC_PROFILE_AUTO,
-              width: 720,
-              height: 1280,
-              fps: 30,
-              bitrate: 2000 * 1000,
-            }}
-            frontCamera={frontCamera}
-            HWAccelEnable={true}
-            denoiseEnable={true}
-            torchEnable={false}
-            keyFrameInterval={2}
-            volume={1.0}
-            videoOrientation={NodePublisher.VIDEO_ORIENTATION_PORTRAIT}
-          />
+          {((Platform.OS === 'android' && androidPermission) ||
+            Platform.OS === 'ios') && (
+            <ApiVideoLiveStreamView
+              style={{
+                flex: 1,
+                backgroundColor: 'black',
+                alignSelf: 'stretch',
+              }}
+              ref={streamRef}
+              camera={cameraPosition}
+              enablePinchedZoom={true}
+              video={{
+                fps: 30,
+                resolution: '720p', // Alternatively, you can specify the resolution in pixels: { width: 1280, height: 720 }
+                bitrate: 2 * 1024 * 1024, // # 2 Mbps
+                gopDuration: 1, // 1 second
+              }}
+              audio={{
+                bitrate: 128000,
+                sampleRate: 44100,
+                isStereo: true,
+              }}
+              isMuted={false}
+              onConnectionSuccess={() => {
+                //do what you want
+              }}
+              onConnectionFailed={(e) => {
+                //do what you want
+              }}
+              onDisconnect={() => {
+                //do what you want
+              }}
+            />
+          )}
+
           {isEnding ? (
             <View style={styles.endingStreamWrap}>
               <ActivityIndicator size="large" color="#FFFFFF" />

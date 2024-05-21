@@ -34,6 +34,11 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@api.video/react-native-livestream@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@api.video/react-native-livestream/-/react-native-livestream-2.0.0.tgz#e8d30caa87760b19ccd5486ac6ba0b284f722e90"
+  integrity sha512-uu6nfFg2JX1FdbwUhg7o9894kbhQLGwXWqUhHjlW0rzp5O8uC1o5HtN79kRCHYUDn1+Fk5hLdT9A82FVEjNKhQ==
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.23.5":
   version "7.23.5"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.23.5.tgz#9009b69a8c602293476ad598ff53e4562e15c244"
@@ -9409,11 +9414,6 @@ react-native-modalbox@^2.0.2:
   integrity sha512-uSuoZ+siPPNqWGyw8NXhA/Aots7mOx2+qijFoeovequY0kczZEPZDd0ARHbzg+1cE3H3AATJEwGdkVA8lUxs0g==
   dependencies:
     prop-types "^15.5.10"
-
-react-native-nodemediaclient@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/react-native-nodemediaclient/-/react-native-nodemediaclient-0.3.3.tgz#99168049816c62736de8c4fc7e112ca40ea64ebe"
-  integrity sha512-xyy5G3ueCAVO563IYGVHCS8cX9P+GSdSWyrejAEPSzePeVfc6V/+zrfbkEiqMqUw4ru1vSvbG4cgapwhE8LtSw==
 
 react-native-orientation-locker@^1.5.0:
   version "1.6.0"
