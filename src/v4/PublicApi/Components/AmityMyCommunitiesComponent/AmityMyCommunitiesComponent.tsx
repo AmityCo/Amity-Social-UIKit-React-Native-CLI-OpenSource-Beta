@@ -51,6 +51,7 @@ const AmityMyCommunitiesComponent: FC<AmityMyCommunitiesComponentType> = ({
       <TouchableOpacity
         style={styles.communityItemContainer}
         onPress={onPressCommunity}
+        key={item.communityId}
       >
         <AvatarElement
           pageID={pageId}
