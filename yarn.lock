@@ -21,6 +21,10 @@
     socket.io-client "2.2.0"
     ts-jest "^28.0.3"
 
+"@amityco/video-broadcaster-react-native@./amityco-video-broadcaster-react-native-0.0.1.tgz":
+  version "0.0.1"
+  resolved "./amityco-video-broadcaster-react-native-0.0.1.tgz#017b836e57bfbe80859baa2cb5219ccafbff2e93"
+
 "@ampproject/remapping@^2.2.0":
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.3.0.tgz#ed441b6fa600072520ce18b43d2c8cc8caecc7f4"
@@ -28,6 +32,11 @@
   dependencies:
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
+
+"@api.video/react-native-livestream@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@api.video/react-native-livestream/-/react-native-livestream-2.0.0.tgz#e8d30caa87760b19ccd5486ac6ba0b284f722e90"
+  integrity sha512-uu6nfFg2JX1FdbwUhg7o9894kbhQLGwXWqUhHjlW0rzp5O8uC1o5HtN79kRCHYUDn1+Fk5hLdT9A82FVEjNKhQ==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.23.5", "@babel/code-frame@^7.24.2":
   version "7.24.2"
