@@ -40,6 +40,7 @@ import Toast from '../components/Toast/Toast';
 import Home from '../screens/Home';
 import AmitySocialUIKitV4Navigator from '../v4/routes/AmitySocialUIKitV4Navigator';
 import CreateLivestream from '../screens/CreateLivestream/CreateLivestream';
+import LivestreamPlayer from '../screens/LivestreamPlayer';
 
 export default function SocialNavigator() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -264,6 +265,11 @@ export default function SocialNavigator() {
               }}
             />
             <Stack.Screen name="CreateStory" component={CreateStoryScreen} />
+            <Stack.Screen
+              name="LivestreamPlayer"
+              component={LivestreamPlayer}
+              options={{ headerShown: false }}
+            />
           </Stack.Group>
         </Stack.Navigator>
       )}

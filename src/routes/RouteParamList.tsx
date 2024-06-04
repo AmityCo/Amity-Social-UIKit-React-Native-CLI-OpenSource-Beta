@@ -84,4 +84,5 @@ export type RootStackParamList = {
     targetId: string;
     targetType: Amity.StoryTargetType;
   };
+  LivestreamPlayer: { streamId: string };
 };
