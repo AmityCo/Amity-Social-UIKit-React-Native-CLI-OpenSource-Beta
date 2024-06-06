@@ -4,6 +4,7 @@ import { Client } from '@amityco/ts-sdk-react-native';
 import type { AuthContextInterface } from '../types/auth.interface';
 import { Alert } from 'react-native';
 import type { IAmityUIkitProvider } from './amity-ui-kit-provider';
+import { setupAmityVideoPlayer } from '@amityco/video-player-react-native';
 
 export const AuthContext = React.createContext<AuthContextInterface>({
   client: {},
@@ -67,6 +68,7 @@ export const AuthContextProvider: FC<IAmityUIkitProvider> = ({
 
     if (response) {
       console.log('response:', response);
+      setupAmityVideoPlayer();
     }
   };
 

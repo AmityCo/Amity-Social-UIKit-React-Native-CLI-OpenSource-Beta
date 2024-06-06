@@ -40,7 +40,7 @@ import CreateStoryScreen from '../screen/CreateStory/CreateStoryScreen';
 import Toast from '../../components/Toast/Toast';
 import AmitySocialGlobalSearchPage from '../PublicApi/Pages/AmitySocialGlobalSearchPage/AmitySocialGlobalSearchPage';
 import CreateLivestream from '../../screens/CreateLivestream/CreateLivestream';
-import LiveStreamPlayer from '~/screens/LivestreamPlayer';
+import LiveStreamPlayer from '../../screens/LivestreamPlayer';
 
 export default function AmitySocialUIKitV4Navigator() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
