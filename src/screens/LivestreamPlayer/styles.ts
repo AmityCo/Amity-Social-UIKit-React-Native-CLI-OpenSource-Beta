@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 
 export const useStyles = () => {
   const styles = StyleSheet.create({
@@ -8,14 +8,8 @@ export const useStyles = () => {
     },
     topSectionWrap: {
       position: 'absolute',
-      top: 60,
-      display: 'flex',
+      top: StatusBar.currentHeight + 30,
       paddingHorizontal: 16,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      width: '100%',
-      zIndex: 1,
     },
     status: {
       paddingHorizontal: 8,
@@ -30,6 +24,14 @@ export const useStyles = () => {
       fontWeight: '600',
       color: '#FFFFFF',
     },
+    controlView: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      // zIndex: 1,
+    },
     controller: {
       position: 'absolute',
       bottom: 60,
@@ -37,12 +39,9 @@ export const useStyles = () => {
       right: 0,
       flexDirection: 'row',
       justifyContent: 'center',
-      zIndex: 100,
     },
     controllerButton: {
       borderColor: '#FFFFFF',
-      borderRadius: 10,
-      borderWidth: 1,
       width: 60,
       flexDirection: 'row',
       justifyContent: 'center',
@@ -53,9 +52,15 @@ export const useStyles = () => {
     },
     closeButton: {
       position: 'absolute',
-      top: 35,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      top: StatusBar.currentHeight + 30,
       right: 16,
-      zIndex: 100,
+      width: 30,
+      height: 30,
+      backgroundColor: 'rgba(255, 255, 255, 0.4)',
+      borderRadius: 72,
     },
   });
 
