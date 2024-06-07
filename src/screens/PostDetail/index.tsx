@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import {
+  type RouteProp,
+  useRoute,
+  useNavigation,
+} from '@react-navigation/native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -44,6 +48,9 @@ import { RootState } from '../../redux/store';
 import { IMentionPosition } from '../CreatePost';
 import { SvgXml } from 'react-native-svg';
 import { closeIcon } from '../../svg/svg-xml-list';
+import { amityPostsFormatter } from '../../util/postDataFormatter';
+import { deletePostById } from '../../providers/Social/feed-sdk';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AmityMentionInput from '../../components/MentionInput/AmityMentionInput';
 import { TSearchItem } from '../../hooks/useSearch';
 
@@ -51,6 +58,7 @@ const PostDetail = () => {
   const theme = useTheme() as MyMD3Theme;
   const styles = useStyles();
   const route = useRoute<RouteProp<RootStackParamList, 'PostDetail'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   const { postId, postIndex, isFromGlobalfeed } = route.params;
 
@@ -68,8 +76,6 @@ const PostDetail = () => {
   const flatListRef = useRef(null);
   let isSubscribed = false;
   const disposers: Amity.Unsubscriber[] = [];
-
-  const [postCollection, setPostCollection] = useState<Amity.Post<any>>();
 
   const [loading, setLoading] = useState<boolean>(true);
   const { currentPostdetail } = useSelector(
@@ -91,6 +97,8 @@ const PostDetail = () => {
   const [replyUserName, setReplyUserName] = useState<string>('');
   const [replyCommentId, setReplyCommentId] = useState<string>('');
 
+  const [currentPost, setCurrentPost] = useState<IPost>();
+
   useEffect(() => {
     const checkMentionNames = mentionNames.filter((item) => {
       return inputMessage.includes(item.displayName);
@@ -103,23 +111,25 @@ const PostDetail = () => {
   }, [inputMessage]);
 
   const getPost = (postId: string) => {
-    PostRepository.getPost(postId, async ({ data }) => {
-      setPostCollection(data);
+    PostRepository.getPost(postId, async ({ data, loading }) => {
+      if (!loading && data) {
+        const formattedPost = await amityPostsFormatter([data]);
+        setCurrentPost(formattedPost[0]);
+      }
     });
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 100);
-    getPost(postId);
-  }, [postId]);
+    if (currentPost) {
+      subscribeTopic(getPostTopic(currentPost));
 
-  useEffect(() => {
-    if (postCollection) {
-      subscribeTopic(getPostTopic(postCollection));
+      if (currentPost.targetType === 'community')
+        getCommunity(currentPost.targetId);
+      else if (currentPost.targetType === 'user') getUser(currentPost.targetId);
+
+      getCommentsByPostId(currentPost.postId);
     }
-  }, [postCollection]);
+  }, [currentPost]);
 
   const subscribeCommentTopic = (targetType: string) => {
     if (isSubscribed) return;
@@ -148,6 +158,7 @@ const PostDetail = () => {
       isSubscribed = true;
     }
   };
+
   function getCommentsByPostId(postId: string) {
     CommentRepository.getComments(
       {
@@ -160,10 +171,23 @@ const PostDetail = () => {
         if (data.error) throw data.error;
         if (!data.loading) {
           setCommentCollection(data);
+          setLoading(false);
         }
       }
     );
   }
+
+  const getCommunity = (communityId: string) => {
+    CommunityRepository.getCommunity(communityId, ({ data: community }) => {
+      setCommunityObject(community);
+    });
+  };
+
+  const getUser = (userId: string) => {
+    UserRepository.getUser(userId, ({ data: user }) => {
+      setUserObject(user);
+    });
+  };
 
   useEffect(() => {
     const postList = isFromGlobalfeed ? postListGlobal : postListFeed;
@@ -173,23 +197,9 @@ const PostDetail = () => {
   }, [communityObject, userObject]);
 
   useEffect(() => {
-    const postList = isFromGlobalfeed ? postListGlobal : postListFeed;
-    if (postList[postIndex] && postList[postIndex].targetType === 'community') {
-      CommunityRepository.getCommunity(
-        postList[postIndex].targetId,
-        ({ data: community }) => {
-          setCommunityObject(community);
-        }
-      );
-    } else if (
-      postList[postIndex] &&
-      postList[postIndex].targetType === 'user'
-    ) {
-      UserRepository.getUser(postList[postIndex].targetId, ({ data: user }) => {
-        setUserObject(user);
-      });
-    }
-    getCommentsByPostId(postList[postIndex]?.postId);
+    if (currentPostdetail.postId === postId) {
+      setCurrentPost(currentPostdetail);
+    } else getPost(postId);
   }, []);
 
   const queryComment = async () => {
@@ -291,10 +301,21 @@ const PostDetail = () => {
     setReplyUserName(user.displayName);
     setReplyCommentId(commentId);
   };
+
   const onCloseReply = () => {
     setReplyUserName('');
     setReplyCommentId('');
   };
+
+  const onDeletePost = useCallback(async () => {
+    await deletePostById(postId);
+
+    const routes = navigation.getState().routes;
+    const previousRoute = routes[routes.length - 2];
+
+    if (previousRoute?.name === 'CreateLivestream') navigation.pop(2);
+    else navigation.goBack();
+  }, [navigation]);
 
   return loading ? (
     <View />
@@ -306,8 +327,8 @@ const PostDetail = () => {
     >
       <ScrollView onScroll={handleScroll} style={styles.container}>
         <PostList
-          onChange={() => {}}
-          postDetail={currentPostdetail as IPost}
+          onDelete={onDeletePost}
+          postDetail={currentPost as IPost}
           isGlobalfeed={isFromGlobalfeed}
         />
 
