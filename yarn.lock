@@ -27,7 +27,7 @@
 
 "@amityco/video-player-react-native@./amityco-video-player-react-native-0.0.1.tgz":
   version "0.0.1"
-  resolved "./amityco-video-player-react-native-0.0.1.tgz#14fbaa3e78ce018627eea6005db01ab5dc37a209"
+  resolved "./amityco-video-player-react-native-0.0.1.tgz#865fd31a0c0b1bb161d5653d0b3149369a6da1ff"
   dependencies:
     react-native-get-random-values "^1.11.0"
     react-native-rsa-native "^2.0.5"

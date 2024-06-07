@@ -56,6 +56,7 @@ export interface IPost {
   childrenPosts: string[];
   mentionees: string[];
   mentionPosition?: IMentionPosition[];
+  path: string;
 }
 export interface IPostList {
   post: IPost;
