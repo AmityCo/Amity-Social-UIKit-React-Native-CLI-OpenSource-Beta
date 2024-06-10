@@ -98,7 +98,13 @@ const AmityPostDetailPage: FC<AmityPostDetailPageType> = ({ route }) => {
   }, [inputMessage]);
 
   const onPressBack = useCallback(() => {
-    navigation.goBack();
+    const routes = navigation.getState().routes;
+    const prevRoute = routes[routes.length - 2];
+
+    if (prevRoute?.name === 'CreateLivestream') {
+      // if navigated from CreateLivestream, go back to the previos page before CreateLivestream page
+      navigation.pop(2);
+    } else navigation.goBack();
   }, [navigation]);
 
   const onCloseReply = () => {

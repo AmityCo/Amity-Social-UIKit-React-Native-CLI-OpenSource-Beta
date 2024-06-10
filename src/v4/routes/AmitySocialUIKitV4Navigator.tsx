@@ -30,7 +30,7 @@ import { SvgXml } from 'react-native-svg';
 import { closeIcon } from '../../svg/svg-xml-list';
 import { useStyles } from '../../routes/style';
 import BackButton from '../../components/BackButton';
-import CloseButton from '../../components/CloseButton';
+import CancelButton from '../../components/CancelButton';
 import EditCommunity from '../../screens/EditCommunity/EditCommunity';
 import VideoPlayerFull from '../../screens/VideoPlayerFullScreen';
 import PostTypeChoiceModal from '../../components/PostTypeChoiceModal/PostTypeChoiceModal';
@@ -215,12 +215,8 @@ export default function AmitySocialUIKitV4Navigator() {
           <Stack.Screen
             name="EditCommunity"
             component={EditCommunity}
-            options={({
-              navigation,
-            }: {
-              navigation: NativeStackNavigationProp<any>;
-            }) => ({
-              headerLeft: () => <CloseButton navigation={navigation} />,
+            options={() => ({
+              headerLeft: () => <CancelButton />,
               title: 'Edit Profile',
               headerTitleAlign: 'center',
             })}
