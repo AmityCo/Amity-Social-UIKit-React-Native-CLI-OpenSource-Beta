@@ -127,6 +127,9 @@ export const useStyles = () => {
     disabled: {
       opacity: 0.3,
     },
+    saveButton: {
+      color: theme.colors.primary,
+    },
     videoContainer: {
       display: 'none',
     },
