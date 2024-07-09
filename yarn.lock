@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@amityco/ts-sdk-react-native@^6.28.0":
-  version "6.28.0"
-  resolved "https://registry.yarnpkg.com/@amityco/ts-sdk-react-native/-/ts-sdk-react-native-6.28.0.tgz#57f4175d513767f2404d5fcdf502f2afafec14f8"
-  integrity sha512-PkEyZgdNOHkwpFYL/7mfCui4fLZJKMG5GU+BKA8AsOgiGqjsiEtFCRtt1efyX8HyhsTKW0hsJXxnUT9zLf2ukw==
+"@amityco/ts-sdk-react-native@^6.28.1":
+  version "6.28.1"
+  resolved "https://registry.yarnpkg.com/@amityco/ts-sdk-react-native/-/ts-sdk-react-native-6.28.1.tgz#cbc568b9c5779b2b6b989915eb34aa5a23be160e"
+  integrity sha512-RtyWtit2znVPyqIne3MDlimwU/ZgeiM5J+v8nOP9eq+2elXwTEZNhRY47eggYaAPNIkf4JmtD1KcABEKyjc2wA==
   dependencies:
     "@react-native-async-storage/async-storage" "^1.17.7"
     "@react-native-community/netinfo" "^9.4.1"
@@ -14,6 +14,7 @@
     debug "^4.3.4"
     hls.js "^1.4.10"
     js-base64 "^3.7.2"
+    mime "3.0.0"
     mitt "^3.0.0"
     mqtt "^4.3.7"
     object-hash "^3.0.0"
@@ -8495,6 +8496,11 @@ mime@1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
+
+mime@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-3.0.0.tgz#b374550dca3a0c18443b0c950a6a58f1931cf7a7"
+  integrity sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==
 
 mime@^2.4.1:
   version "2.6.0"
