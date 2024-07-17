@@ -195,20 +195,25 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
         <View style={colStyle} key={item}>
           <TouchableWithoutFeedback onPress={() => onClickImage(index)}>
             <View>
-              {videoPosts.length > 0 && renderPlayButton()}
+              {videoPosts.length > 0 && index < 3 && renderPlayButton()}
               <Image
                 style={imageStyle}
                 source={{
                   uri: item,
                 }}
               />
-              {index === 3 && imagePosts.length > 4 && (
-                <View style={styles.overlay}>
-                  <Text style={styles.overlayText}>{`+ ${
-                    imagePosts.length - 3
-                  }`}</Text>
-                </View>
-              )}
+              {index === 3 &&
+                (imagePosts.length > 4 || videoPosts.length > 4) && (
+                  <View style={styles.overlay}>
+                    <Text style={styles.overlayText}>{`+ ${
+                      imagePosts.length
+                        ? imagePosts.length - 3
+                        : videoPosts.length
+                        ? videoPosts.length - 3
+                        : ''
+                    }`}</Text>
+                  </View>
+                )}
             </View>
           </TouchableWithoutFeedback>
         </View>
