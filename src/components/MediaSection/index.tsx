@@ -195,7 +195,9 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
         <View style={colStyle} key={item}>
           <TouchableWithoutFeedback onPress={() => onClickImage(index)}>
             <View>
-              {videoPosts.length > 0 && index < 3 && renderPlayButton()}
+              {videoPosts.length > 0 &&
+                (index < 3 || (index === 3 && videoPosts.length < 5)) &&
+                renderPlayButton()}
               <Image
                 style={imageStyle}
                 source={{
