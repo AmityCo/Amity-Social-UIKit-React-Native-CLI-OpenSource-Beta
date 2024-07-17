@@ -66,6 +66,10 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
   }, [imagePosts, videoPosts, apiRegion]);
 
   const getPostInfo = useCallback(async () => {
+    const imageChildUrls = [];
+    const videoChildUrls = [];
+    const pollChildIds = [];
+
     try {
       const response = await Promise.all(
         childrenPosts.map(async (id) => {
@@ -73,25 +77,20 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
           return { dataType: post.dataType, data: post.data };
         })
       );
+
       response.forEach((item) => {
         if (item.dataType === 'image') {
           const url: string = `https://api.${apiRegion}.amity.co/api/v3/files/${item?.data.fileId}/download?size=medium`;
-          setImagePosts((prev) => {
-            return !prev.includes(url) ? [...prev, url] : [...prev];
-          });
+          imageChildUrls.push(url);
         } else if (item.dataType === 'video') {
-          setVideoPosts((prev) => {
-            const isExisted = prev.some(
-              (video) =>
-                video.videoFileId.original === item.data.videoFileId.original
-            );
-            return !isExisted ? [...prev, item.data] : [...prev];
-          });
+          videoChildUrls.push(item.data);
         } else if (item.dataType === 'poll') {
-          setPollIds((prev) => {
-            return !prev.includes(item.data) ? [...prev, item.data] : [...prev];
-          });
+          pollChildIds.push(item.data);
         }
+
+        setImagePosts([...imageChildUrls]);
+        setVideoPosts([...videoChildUrls]);
+        setPollIds([...pollChildIds]);
       });
     } catch (error) {
       console.log('error: ', error);
@@ -99,8 +98,6 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
   }, [apiRegion, childrenPosts]);
 
   useEffect(() => {
-    setVideoPosts([]);
-    setImagePosts([]);
     getPostInfo();
   }, [childrenPosts, currentPostdetail, postList, postListGlobal, getPostInfo]);
 
