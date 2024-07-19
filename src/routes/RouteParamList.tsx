@@ -47,6 +47,20 @@ export type RootStackParamList = {
     >;
     needApprovalOnPostCreation: boolean;
   };
+  CreateLivestream: {
+    targetId: string;
+    targetName: string;
+    targetType: string;
+    isPublic?: boolean;
+    postSetting?: ValueOf<
+      Readonly<{
+        ONLY_ADMIN_CAN_POST: 'ONLY_ADMIN_CAN_POST';
+        ADMIN_REVIEW_POST_REQUIRED: 'ADMIN_REVIEW_POST_REQUIRED';
+        ANYONE_CAN_POST: 'ANYONE_CAN_POST';
+      }>
+    >;
+    needApprovalOnPostCreation: boolean;
+  };
   PostDetail: {
     postId: string;
     postIndex: number;
@@ -74,4 +88,11 @@ export type RootStackParamList = {
   VideoPlayer: { source: string };
   PendingPosts: { communityId: string; isModerator: boolean };
   ReactionList: { referenceId: string; referenceType: string };
+  CreateStory: {
+    targetId: string;
+    targetType: Amity.StoryTargetType;
+  };
+  UserPendingRequest: undefined;
+  FollowerList: Amity.User;
+  LivestreamPlayer: { streamId: string };
 };

@@ -9,16 +9,17 @@ export const useStyles = () => {
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
-      paddingTop: Platform.OS === 'android' ? 35 : 10, // Adjust for Android status bar
+      paddingTop: Platform.OS === 'android' ? 35 : 10,
       paddingHorizontal: 15,
     },
     header: {
-      paddingTop: Platform.OS === 'ios' ? 50 : 20, // Adjust for iOS notch
+      paddingTop: Platform.OS === 'ios' ? 50 : 20,
       zIndex: 1,
       padding: 12,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
+      backgroundColor: theme.colors.background,
     },
     closeButton: {
       zIndex: 1,
@@ -58,7 +59,7 @@ export const useStyles = () => {
       paddingTop: 15,
       alignItems: 'center',
       borderTopWidth: 1,
-      borderTopColor: theme.colors.border,
+      borderTopColor: theme.colors.baseShade4,
     },
   });
   return styles;

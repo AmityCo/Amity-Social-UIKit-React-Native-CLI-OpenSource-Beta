@@ -11,7 +11,7 @@ export const amityPostsFormatter = async (
       return {
         postId: item.postId,
         data: item.data as Record<string, any>,
-        dataType: item.dataType,
+        dataType: item.dataType ?? 'text',
         myReactions: item.myReactions as string[],
         reactionCount: item.reactions as Record<string, number>,
         commentsCount: item.commentsCount,
@@ -24,6 +24,7 @@ export const amityPostsFormatter = async (
         childrenPosts: item.children,
         mentionees: item.mentionees[0]?.userIds,
         mentionPosition: item?.metadata?.mentioned || undefined,
+        path: item.path,
       } as IPost;
     })
   );

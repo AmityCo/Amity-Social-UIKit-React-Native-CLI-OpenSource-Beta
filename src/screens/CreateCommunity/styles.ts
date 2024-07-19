@@ -1,17 +1,17 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, useWindowDimensions } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import type { MyMD3Theme } from 'src/providers/amity-ui-kit-provider';
 
 export const useStyles = () => {
   const theme = useTheme() as MyMD3Theme;
+  const { height } = useWindowDimensions();
   const styles = StyleSheet.create({
     container: {
-      paddingBottom: 320,
-      backgroundColor: theme.colors.screenBackground,
+      backgroundColor: theme.colors.baseShade4,
     },
     uploadContainer: {
       width: '100%',
-      height: '35%',
+      height: height * 0.35,
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#f5f5f5',
@@ -63,7 +63,7 @@ export const useStyles = () => {
     },
     inputField: {
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
+      borderBottomColor: theme.colors.baseShade4,
       borderRadius: 5,
       marginTop: 5,
       paddingVertical: 16,
@@ -88,14 +88,12 @@ export const useStyles = () => {
       alignItems: 'center',
       paddingVertical: 16,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
+      borderBottomColor: theme.colors.baseShade4,
     },
     addIcon: {
       marginHorizontal: 6,
     },
-    arrowIcon: {
-      opacity: 0.75,
-    },
+
     listItem: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -131,7 +129,7 @@ export const useStyles = () => {
     },
     radioGroup: {
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
+      borderBottomColor: theme.colors.baseShade4,
       marginBottom: 24,
     },
     createButton: {
@@ -152,12 +150,12 @@ export const useStyles = () => {
     addUsersContainer: {
       marginVertical: 6,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
+      borderBottomColor: theme.colors.baseShade4,
       paddingBottom: 24,
     },
     userItemWrap: {
       flexDirection: 'row',
-      backgroundColor: '#EBECEF',
+      backgroundColor: theme.colors.baseShade4,
       borderRadius: 24,
       padding: 6,
       height: 40,
@@ -184,6 +182,10 @@ export const useStyles = () => {
     },
     loading: {
       marginLeft: 6,
+    },
+    memberName: {
+      color: theme.colors.base,
+      fontSize: 12,
     },
   });
 

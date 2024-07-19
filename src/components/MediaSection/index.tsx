@@ -17,6 +17,7 @@ import ImageView from '../../components/react-native-image-viewing/dist';
 import { RootState } from '../../redux/store';
 import { playBtn } from '../../svg/svg-xml-list';
 import PollSection from '../PollSection/PollSection';
+import LivestreamSection from '../LivestreamSection';
 
 interface IMediaSection {
   childrenPosts: string[];
@@ -26,6 +27,9 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
   const [imagePosts, setImagePosts] = useState<string[]>([]);
   const [videoPosts, setVideoPosts] = useState<IVideoPost[]>([]);
   const [pollIds, setPollIds] = useState<{ pollId: string }[]>([]);
+  const [livestreamId, setLivestreamId] = useState<Amity.Stream['streamId'][]>(
+    []
+  );
 
   const [imagePostsFullSize, setImagePostsFullSize] = useState<MediaUri[]>([]);
   const [videoPostsFullSize, setVideoPostsFullSize] = useState<MediaUri[]>([]);
@@ -69,6 +73,7 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
     const imageChildUrls = [];
     const videoChildUrls = [];
     const pollChildIds = [];
+    const livestreamIds = [];
 
     try {
       const response = await Promise.all(
@@ -86,11 +91,14 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
           videoChildUrls.push(item.data);
         } else if (item.dataType === 'poll') {
           pollChildIds.push(item.data);
+        } else if (item.dataType === 'liveStream') {
+          livestreamIds.push(item.data.streamId);
         }
 
         setImagePosts([...imageChildUrls]);
         setVideoPosts([...videoChildUrls]);
         setPollIds([...pollChildIds]);
+        setLivestreamId([...livestreamIds]);
       });
     } catch (error) {
       console.log('error: ', error);
@@ -98,6 +106,8 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
   }, [apiRegion, childrenPosts]);
 
   useEffect(() => {
+    setVideoPosts([]);
+    setImagePosts([]);
     getPostInfo();
   }, [childrenPosts, currentPostdetail, postList, postListGlobal, getPostInfo]);
 
@@ -256,6 +266,8 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
     <View>
       {pollIds.length > 0 ? (
         <PollSection pollId={pollIds[0].pollId} />
+      ) : livestreamId.length > 0 ? (
+        <LivestreamSection streamId={livestreamId[0]} />
       ) : (
         renderMediaPosts()
       )}

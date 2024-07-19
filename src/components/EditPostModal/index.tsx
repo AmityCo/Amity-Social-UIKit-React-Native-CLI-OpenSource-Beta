@@ -27,7 +27,7 @@ import postDetailSlice from '../../redux/slices/postDetailSlice';
 import globalFeedSlice from '../../redux/slices/globalfeedSlice';
 import feedSlice from '../../redux/slices/feedSlice';
 import { useDispatch } from 'react-redux';
-import MentionInput from '../MentionInput/MentionInput';
+import MentionInput from '../MentionInput/AmityMentionInput';
 import { TSearchItem } from 'src/hooks/useSearch';
 interface IModal {
   visible: boolean;
@@ -52,7 +52,6 @@ const EditPostModal = ({
   const theme = useTheme() as MyMD3Theme;
   const styles = useStyles();
   const { apiRegion } = useAuth();
-
   const [inputMessage, setInputMessage] = useState(
     postDetail?.data?.text ?? ''
   );
@@ -64,7 +63,6 @@ const EditPostModal = ({
   const [mentionUsers, setMentionUsers] = useState<TSearchItem[]>([]);
   const [imagePosts, setImagePosts] = useState<string[]>([]);
   const [videoPosts, setVideoPosts] = useState<IVideoPost[]>([]);
-
   const [childrenPostArr, setChildrenPostArr] = useState<string[]>([]);
   const [initialText, setInitialText] = useState('');
   const { updateByPostId: updateByPostIdGlobalFeed } = globalFeedSlice.actions;
@@ -202,7 +200,6 @@ const EditPostModal = ({
         : displayVideos.length > 0
         ? 'video'
         : 'text';
-
     const response = await editPost(
       postDetail.postId,
       {
@@ -213,7 +210,6 @@ const EditPostModal = ({
       mentionees,
       mentionPosition
     );
-
     if (response) {
       const formattedPost = await amityPostsFormatter([response]);
       const updatedPost = { ...postDetail, ...formattedPost[0] };

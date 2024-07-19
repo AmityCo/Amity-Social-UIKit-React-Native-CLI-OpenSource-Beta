@@ -10,15 +10,15 @@ import useAuth from '../hooks/useAuth';
 import Explore from '../screens/Explore';
 import CategoryList from '../screens/CategorytList';
 import CommunityList from '../screens/CommunityList';
-import CommunityHome from '../screens/CommunityHome/index';
+import CommunityHome from '../v4/screen/CommunityHome';
 import { CommunitySetting } from '../screens/CommunitySetting/index';
 import CommunityMemberDetail from '../screens/CommunityMemberDetail/CommunityMemberDetail';
-import Home from '../screens/Home';
+import Home from '../v4/screen/Home';
 import PostDetail from '../screens/PostDetail';
 import CreatePost from '../screens/CreatePost';
-import UserProfile from '../screens/UserProfile/UserProfile';
+import UserProfile from '../v4/screen/UserProfile/UserProfile';
 import { EditProfile } from '../screens/EditProfile/EditProfile';
-import UserProfileSetting from '../screens/UserProfileSetting/UserProfileSetting';
+import UserProfileSetting from '../v4/screen/UserProfileSetting/UserProfileSetting';
 import CommunitySearch from '../screens/CommunitySearch';
 import AllMyCommunity from '../screens/AllMyCommunity';
 import CreateCommunity from '../screens/CreateCommunity';
@@ -30,12 +30,19 @@ import { SvgXml } from 'react-native-svg';
 import { closeIcon } from '../svg/svg-xml-list';
 import { useStyles } from '../routes/style';
 import BackButton from '../components/BackButton';
+import CancelButton from '../components/CancelButton';
 import CloseButton from '../components/CloseButton';
 import EditCommunity from '../screens/EditCommunity/EditCommunity';
 import VideoPlayerFull from '../screens/VideoPlayerFullScreen';
 import PostTypeChoiceModal from '../components/PostTypeChoiceModal/PostTypeChoiceModal';
 import CreatePoll from '../screens/CreatePoll/CreatePoll';
 import ReactionListScreen from '../screens/ReactionListScreen/ReactionListScreen';
+import CreateStoryScreen from '../v4/screen/CreateStory/CreateStoryScreen';
+import Toast from '../components/Toast/Toast';
+import UserPendingRequest from '../v4/screen/UserPendingRequest/UserPendingRequest';
+import FollowerList from '../v4/screen/FollowerList/FollowerList';
+import CreateLivestream from '../screens/CreateLivestream/CreateLivestream';
+import LivestreamPlayer from '../screens/LivestreamPlayer';
 
 export default function SocialNavigator() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -65,10 +72,21 @@ export default function SocialNavigator() {
           <Stack.Screen
             name="PostDetail"
             component={PostDetail}
-            options={{
-              headerLeft: () => <BackButton />,
+            options={({
+              navigation,
+            }: {
+              navigation: NativeStackNavigationProp<any>;
+            }) => ({
+              headerLeft: () => {
+                const routes = navigation.getState().routes;
+                const previousRoute = routes[routes.length - 2];
+                if (previousRoute?.name === 'CreateLivestream')
+                  return <CloseButton onPress={() => navigation.pop(2)} />;
+                return <BackButton />;
+              },
               title: '',
-            }}
+              headerTitleAlign: 'center',
+            })}
           />
           <Stack.Screen
             name="CategoryList"
@@ -86,12 +104,17 @@ export default function SocialNavigator() {
                 params: { communityName, communityId, isModerator },
               },
             }: any) => ({
-              headerLeft: () => <BackButton />,
+              headerLeft: () => (
+                <BackButton
+                  onPress={() => {
+                    navigation.navigate(Home);
+                  }}
+                />
+              ),
               title: communityName,
               headerRight: () => (
                 <TouchableOpacity
                   onPress={() => {
-                    // Handle button press here
                     navigation.navigate('CommunitySetting', {
                       communityId: communityId,
                       communityName: communityName,
@@ -110,13 +133,32 @@ export default function SocialNavigator() {
           <Stack.Screen
             name="PendingPosts"
             component={PendingPosts}
-            options={{ title: 'Pending Posts' }}
+            options={({
+              navigation,
+              route: {
+                params: { communityName, communityId, isModerator },
+              },
+            }: any) => ({
+              title: 'Pending Posts',
+              headerLeft: () => (
+                <BackButton
+                  goBack={false}
+                  onPress={() =>
+                    navigation.navigate('CommunityHome', {
+                      communityName,
+                      communityId,
+                      isModerator,
+                    })
+                  }
+                />
+              ),
+            })}
           />
           <Stack.Screen
             name="CommunitySearch"
             component={CommunitySearch}
             options={{
-              headerShown: false, // Remove the back button
+              headerShown: false,
             }}
           />
           <Stack.Screen
@@ -178,6 +220,11 @@ export default function SocialNavigator() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="CreateLivestream"
+            component={CreateLivestream}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="UserProfile"
             component={UserProfile}
             options={{
@@ -189,12 +236,8 @@ export default function SocialNavigator() {
           <Stack.Screen
             name="EditCommunity"
             component={EditCommunity}
-            options={({
-              navigation,
-            }: {
-              navigation: NativeStackNavigationProp<any>;
-            }) => ({
-              headerLeft: () => <CloseButton navigation={navigation} />,
+            options={() => ({
+              headerLeft: () => <CancelButton />,
               title: 'Edit Profile',
               headerTitleAlign: 'center',
             })}
@@ -209,16 +252,52 @@ export default function SocialNavigator() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="ReactionList"
-            component={ReactionListScreen}
+            name="UserPendingRequest"
+            component={UserPendingRequest}
             options={{
-              title: 'Reactions',
+              title: 'Follow Requests',
               headerLeft: () => <BackButton />,
             }}
           />
+          <Stack.Screen
+            name="FollowerList"
+            component={FollowerList}
+            options={({
+              route: {
+                params: { displayName },
+              },
+            }: any) => ({
+              title: displayName,
+              headerLeft: () => <BackButton />,
+            })}
+          />
+
+          <Stack.Group
+            screenOptions={{
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          >
+            <Stack.Screen
+              name="ReactionList"
+              component={ReactionListScreen}
+              options={{
+                headerShown: true,
+                title: 'Reactions',
+                headerLeft: () => <BackButton />,
+              }}
+            />
+            <Stack.Screen name="CreateStory" component={CreateStoryScreen} />
+            <Stack.Screen
+              name="LivestreamPlayer"
+              component={LivestreamPlayer}
+              options={{ headerShown: false }}
+            />
+          </Stack.Group>
         </Stack.Navigator>
       )}
       <PostTypeChoiceModal />
+      <Toast />
     </NavigationContainer>
   );
 }
