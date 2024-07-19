@@ -17,6 +17,20 @@ export interface IGlobalFeedRes {
   prevPage: Amity.Page<number> | undefined;
 }
 
+interface PostParam {
+  targetType: string;
+  targetId: string;
+  mentionees?: Amity.MentionType['user'][];
+  metadata: {
+    mentioned: IMentionPosition[];
+  };
+  data?: {
+    text: string;
+    fileIds?: string[];
+  };
+  attachments?: { type: Amity.PostContentType; fileId: string }[];
+}
+
 export async function getGlobalFeed(
   page: Amity.Page<number>
 ): Promise<IGlobalFeedRes> {
@@ -102,9 +116,12 @@ export async function createPostToFeed(
   mentionees: string[],
   mentionPosition: IMentionPosition[]
 ): Promise<Amity.Post<any>> {
-  let postParam = {
+  let postParam: PostParam = {
     targetType: targetType,
     targetId: targetId,
+    data: {
+      text: content.text,
+    },
     mentionees:
       mentionees.length > 0
         ? ([
@@ -113,40 +130,25 @@ export async function createPostToFeed(
         : [],
     metadata: { mentioned: mentionPosition },
   };
-  if (postType === 'text') {
-    const newPostParam = {
-      data: {
-        text: content.text,
-      },
+
+  if (postType === 'image') {
+    const formattedFileIds = content.fileIds.map((id) => {
+      return { type: PostContentType.IMAGE, fileId: id };
+    });
+
+    postParam = {
       ...postParam,
-    };
-    postParam = newPostParam;
-  } else if (postType === 'image') {
-    const formattedFileIds: { type: string; fileId: string }[] =
-      content.fileIds.map((id) => {
-        return { type: PostContentType.IMAGE, fileId: id };
-      });
-    const newPostParam = {
-      data: {
-        text: content.text,
-      },
       attachments: formattedFileIds,
-      ...postParam,
     };
-    postParam = newPostParam;
   } else if (postType === 'video') {
-    const formattedFileIds: { type: string; fileId: string }[] =
-      content.fileIds.map((id) => {
-        return { type: PostContentType.VIDEO, fileId: id };
-      });
-    const newPostParam = {
-      data: {
-        text: content.text,
-      },
-      attachments: formattedFileIds,
+    const formattedFileIds = content.fileIds.map((id) => {
+      return { type: PostContentType.VIDEO, fileId: id };
+    });
+
+    postParam = {
       ...postParam,
+      attachments: formattedFileIds,
     };
-    postParam = newPostParam;
   }
   const createPostObject: Promise<Amity.Post<any>> = new Promise(
     async (resolve, reject) => {
@@ -171,7 +173,7 @@ export async function editPost(
   mentionees: string[],
   mentionPosition: IMentionPosition[]
 ): Promise<Amity.Post<any>> {
-  let postParam = {
+  let postParam: Omit<PostParam | 'targetType', 'targetId'> = {
     mentionees:
       mentionees.length > 0
         ? ([
@@ -180,41 +182,41 @@ export async function editPost(
         : [],
     metadata: { mentioned: mentionPosition },
   };
+
   if (postType === 'text') {
-    const newPostParam = {
+    postParam = {
+      ...postParam,
       data: {
         text: content.text,
-        attachments: [],
       },
-      ...postParam,
+      attachments: [],
     };
-    postParam = newPostParam;
   } else if (postType === 'image') {
-    const formattedFileIds: { type: string; fileId: string }[] =
-      content.fileIds.map((id) => {
-        return { type: PostContentType.IMAGE, fileId: id };
-      });
-    const newPostParam = {
+    const formattedFileIds = content.fileIds.map((id) => {
+      return { type: PostContentType.IMAGE, fileId: id };
+    });
+
+    postParam = {
+      ...postParam,
       data: {
         text: content.text,
+        fileIds: content.fileIds,
       },
       attachments: formattedFileIds,
-      ...postParam,
     };
-    postParam = newPostParam;
   } else if (postType === 'video') {
-    const formattedFileIds: { type: string; fileId: string }[] =
-      content.fileIds.map((id) => {
-        return { type: PostContentType.VIDEO, fileId: id };
-      });
-    const newPostParam = {
+    const formattedFileIds = content.fileIds.map((id) => {
+      return { type: PostContentType.VIDEO, fileId: id };
+    });
+
+    postParam = {
+      ...postParam,
       data: {
         text: content.text,
+        fileIds: content.fileIds,
       },
       attachments: formattedFileIds,
-      ...postParam,
     };
-    postParam = newPostParam;
   }
   const editPostObject: Promise<Amity.Post<any>> = new Promise(
     async (resolve, reject) => {
