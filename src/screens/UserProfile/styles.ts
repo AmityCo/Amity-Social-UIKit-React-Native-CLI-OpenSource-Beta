@@ -9,9 +9,7 @@ export const useStyles = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      // alignItems: 'center',
-      width: '100%',
-      justifyContent: 'flex-start',
+      backgroundColor: theme.colors.background,
     },
     loadingIndicator: {
       flex: 1,
@@ -32,7 +30,6 @@ export const useStyles = () => {
     followIcon: {
       width: 18,
       height: 16,
-      color: 'white',
     },
     userDetail: {
       flexDirection: 'row',
@@ -123,7 +120,7 @@ export const useStyles = () => {
       borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: theme.colors.border,
+      backgroundColor: theme.colors.baseShade4,
       marginRight: 10,
     },
     focusedTab: {

@@ -21,11 +21,11 @@ export const useStyles = () => {
     },
     totalVote: {
       fontSize: 12,
-      color: theme.colors.baseShade3,
+      color: theme.colors.baseShade2,
     },
     pollOptionContainer: {
       borderWidth: 1,
-      borderColor: theme.colors.border,
+      borderColor: theme.colors.baseShade4,
       borderRadius: 5,
       padding: 10,
       marginVertical: 5,
@@ -68,7 +68,7 @@ export const useStyles = () => {
       width: '100%',
       height: 10,
       borderRadius: 20,
-      backgroundColor: theme.colors.screenBackground,
+      backgroundColor: theme.colors.baseShade4,
       marginTop: 10,
     },
     innerBar: {
@@ -82,6 +82,15 @@ export const useStyles = () => {
     onResultOption: {
       borderLeftWidth: 5,
       borderColor: theme.colors.primary,
+    },
+    voteCount: {
+      fontSize: 13,
+      fontWeight: '400',
+      color: theme.colors.baseShade1,
+      marginTop: 8,
+    },
+    selectedVoteCount: {
+      color: theme.colors.primary,
     },
   });
   return styles;

@@ -7,7 +7,7 @@ export const useStyles = () => {
   const styles = StyleSheet.create({
     barContainer: {
       backgroundColor: theme.colors.background,
-      borderBottomColor: theme.colors.border,
+      borderBottomColor: theme.colors.baseShade4,
       borderBottomWidth: 1,
     },
     header: {
@@ -55,9 +55,12 @@ export const useStyles = () => {
     requiredField: {
       color: 'red',
     },
+    maxPollQuestionText: {
+      color: theme.colors.base,
+    },
     inputContainer: {
       margin: 16,
-      borderBottomColor: theme.colors.border,
+      borderBottomColor: theme.colors.baseShade4,
       borderBottomWidth: 1,
       paddingBottom: 20,
     },
@@ -106,13 +109,14 @@ export const useStyles = () => {
       flex: 1,
       padding: 5,
       fontSize: 15,
+      color: theme.colors.base,
     },
     scrollContainer: {
       paddingVertical: 16,
     },
     pollOptionContainer: {
       borderRadius: 5,
-      backgroundColor: theme.colors.border,
+      backgroundColor: theme.colors.baseShade4,
       paddingHorizontal: 10,
       paddingVertical: 5,
       marginVertical: 5,
@@ -129,11 +133,15 @@ export const useStyles = () => {
       marginTop: 16,
       borderWidth: 0,
     },
+    selectedTimeFrame: {
+      color: theme.colors.base,
+    },
     scheduleTitleStyle: {
       fontWeight: 'bold',
       fontSize: 18,
       alignSelf: 'flex-start',
       marginBottom: 20,
+      color: theme.colors.base,
     },
     scheduleInitValueTextStyle: {
       color: theme.colors.base,
@@ -141,7 +149,7 @@ export const useStyles = () => {
     scheduleOptionStyle: {
       borderBottomWidth: 0,
       marginVertical: 5,
-      backgroundColor: theme.colors.border,
+      backgroundColor: theme.colors.baseShade4,
       borderRadius: 2,
     },
     scheduleSectionStyle: {

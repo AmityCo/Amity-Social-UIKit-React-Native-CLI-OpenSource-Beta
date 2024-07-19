@@ -13,7 +13,7 @@ export const useStyles = () => {
       top: 0,
       backgroundColor: 'transparent',
       borderWidth: 1,
-      borderColor: theme.colors.border,
+      borderColor: theme.colors.baseShade4,
       borderRadius: 5,
     },
     mentionContainer: {
@@ -34,18 +34,17 @@ export const useStyles = () => {
       color: theme.colors.primary,
       fontSize: 15,
     },
+    inputContainer: {
+      width: '100%',
+    },
     inputText: {
       color: theme.colors.base,
       fontSize: 15,
-      letterSpacing: 0,
+      padding: 0,
     },
     textInput: {
       marginTop: 12,
-      borderWidth: 0,
-      borderBottomWidth: 0,
-      backgroundColor: 'transparent',
       fontSize: 15,
-      zIndex: 999,
       width: '100%',
     },
     transparentText: {

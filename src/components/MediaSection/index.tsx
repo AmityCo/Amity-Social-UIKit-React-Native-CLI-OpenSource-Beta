@@ -17,6 +17,7 @@ import ImageView from '../../components/react-native-image-viewing/dist';
 import { RootState } from '../../redux/store';
 import { playBtn } from '../../svg/svg-xml-list';
 import PollSection from '../PollSection/PollSection';
+import LivestreamSection from '../LivestreamSection';
 
 interface IMediaSection {
   childrenPosts: string[];
@@ -26,6 +27,9 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
   const [imagePosts, setImagePosts] = useState<string[]>([]);
   const [videoPosts, setVideoPosts] = useState<IVideoPost[]>([]);
   const [pollIds, setPollIds] = useState<{ pollId: string }[]>([]);
+  const [livestreamId, setLivestreamId] = useState<Amity.Stream['streamId'][]>(
+    []
+  );
 
   const [imagePostsFullSize, setImagePostsFullSize] = useState<MediaUri[]>([]);
   const [videoPostsFullSize, setVideoPostsFullSize] = useState<MediaUri[]>([]);
@@ -66,6 +70,11 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
   }, [imagePosts, videoPosts, apiRegion]);
 
   const getPostInfo = useCallback(async () => {
+    const imageChildUrls = [];
+    const videoChildUrls = [];
+    const pollChildIds = [];
+    const livestreamIds = [];
+
     try {
       const response = await Promise.all(
         childrenPosts.map(async (id) => {
@@ -73,25 +82,23 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
           return { dataType: post.dataType, data: post.data };
         })
       );
+
       response.forEach((item) => {
         if (item.dataType === 'image') {
           const url: string = `https://api.${apiRegion}.amity.co/api/v3/files/${item?.data.fileId}/download?size=medium`;
-          setImagePosts((prev) => {
-            return !prev.includes(url) ? [...prev, url] : [...prev];
-          });
+          imageChildUrls.push(url);
         } else if (item.dataType === 'video') {
-          setVideoPosts((prev) => {
-            const isExisted = prev.some(
-              (video) =>
-                video.videoFileId.original === item.data.videoFileId.original
-            );
-            return !isExisted ? [...prev, item.data] : [...prev];
-          });
+          videoChildUrls.push(item.data);
         } else if (item.dataType === 'poll') {
-          setPollIds((prev) => {
-            return !prev.includes(item.data) ? [...prev, item.data] : [...prev];
-          });
+          pollChildIds.push(item.data);
+        } else if (item.dataType === 'liveStream') {
+          livestreamIds.push(item.data.streamId);
         }
+
+        setImagePosts([...imageChildUrls]);
+        setVideoPosts([...videoChildUrls]);
+        setPollIds([...pollChildIds]);
+        setLivestreamId([...livestreamIds]);
       });
     } catch (error) {
       console.log('error: ', error);
@@ -99,6 +106,8 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
   }, [apiRegion, childrenPosts]);
 
   useEffect(() => {
+    setVideoPosts([]);
+    setImagePosts([]);
     getPostInfo();
   }, [childrenPosts, currentPostdetail, postList, postListGlobal, getPostInfo]);
 
@@ -196,20 +205,27 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
         <View style={colStyle} key={item}>
           <TouchableWithoutFeedback onPress={() => onClickImage(index)}>
             <View>
-              {videoPosts.length > 0 && renderPlayButton()}
+              {videoPosts.length > 0 &&
+                (index < 3 || (index === 3 && videoPosts.length < 5)) &&
+                renderPlayButton()}
               <Image
                 style={imageStyle}
                 source={{
                   uri: item,
                 }}
               />
-              {index === 3 && imagePosts.length > 4 && (
-                <View style={styles.overlay}>
-                  <Text style={styles.overlayText}>{`+ ${
-                    imagePosts.length - 3
-                  }`}</Text>
-                </View>
-              )}
+              {index === 3 &&
+                (imagePosts.length > 4 || videoPosts.length > 4) && (
+                  <View style={styles.overlay}>
+                    <Text style={styles.overlayText}>{`+ ${
+                      imagePosts.length
+                        ? imagePosts.length - 3
+                        : videoPosts.length
+                        ? videoPosts.length - 3
+                        : ''
+                    }`}</Text>
+                  </View>
+                )}
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -250,9 +266,12 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
     <View>
       {pollIds.length > 0 ? (
         <PollSection pollId={pollIds[0].pollId} />
+      ) : livestreamId.length > 0 ? (
+        <LivestreamSection streamId={livestreamId[0]} />
       ) : (
         renderMediaPosts()
       )}
+
       <ImageView
         images={
           imagePostsFullSize.length > 0

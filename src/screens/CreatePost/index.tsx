@@ -12,6 +12,7 @@ import {
   ScrollView,
   Keyboard,
   Alert,
+  Linking,
 } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,8 +37,13 @@ import { useTheme } from 'react-native-paper';
 import { CommunityRepository } from '@amityco/ts-sdk-react-native';
 import { checkCommunityPermission } from '../../providers/Social/communities-sdk';
 import useAuth from '../../hooks/useAuth';
-import MentionInput from '../../components/MentionInput/MentionInput';
+import AmityMentionInput from '../../components/MentionInput/AmityMentionInput';
 import { TSearchItem } from '../../hooks/useSearch';
+import globalFeedSlice from '../../redux/slices/globalfeedSlice';
+import { useDispatch } from 'react-redux';
+import { amityPostsFormatter } from '../../util/postDataFormatter';
+import feedSlice from '../../redux/slices/feedSlice';
+import { useRequestPermission } from '../../v4/hook/useCamera';
 
 export interface IDisplayImage {
   url: string;
@@ -54,8 +60,17 @@ export interface IMentionPosition {
   displayName?: string;
 }
 const CreatePost = ({ route }: any) => {
+  useRequestPermission({
+    onRequestPermissionFailed: () => {
+      Linking.openSettings();
+    },
+    shouldCall: true,
+  });
   const theme = useTheme() as MyMD3Theme;
   const styles = useStyles();
+  const { addPostToGlobalFeed } = globalFeedSlice.actions;
+  const { addPostToFeed } = feedSlice.actions;
+  const dispatch = useDispatch();
   const { targetId, targetType, targetName } = route.params;
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const [inputMessage, setInputMessage] = useState('');
@@ -68,13 +83,15 @@ const CreatePost = ({ route }: any) => {
   const [mentionsPosition, setMentionsPosition] = useState<IMentionPosition[]>(
     []
   );
-
+  const [
+    hasCommunityManagepostPermission,
+    setHasCommunityManagepostPermission,
+  ] = useState(false);
   const [communityObject, setCommunityObject] =
     useState<Amity.LiveObject<Amity.Community>>();
   const { data: community } = communityObject ?? {};
   const privateCommunityId = !community?.isPublic && community?.communityId;
   const { client, apiRegion } = useAuth();
-
   const getCommunityDetail = useCallback(() => {
     if (targetType === 'community') {
       CommunityRepository.getCommunity(targetId, setCommunityObject);
@@ -84,67 +101,55 @@ const CreatePost = ({ route }: any) => {
     getCommunityDetail();
   }, [getCommunityDetail]);
 
+  useEffect(() => {
+    (async () => {
+      if (targetType === 'community') {
+        const res = await checkCommunityPermission(
+          community.communityId,
+          client as Amity.Client,
+          apiRegion
+        );
+        setHasCommunityManagepostPermission(
+          res.permissions.length > 0 &&
+            res.permissions.includes('Post/ManagePosts')
+        );
+      }
+    })();
+  }, [apiRegion, client, community?.communityId, targetType]);
+
   const goBack = () => {
     navigation.goBack();
   };
+
   const handleCreatePost = async () => {
     const mentionUserIds = mentionNames.map((item) => item.id) as string[];
-    if (displayImages.length > 0) {
-      const fileIdArr: (string | undefined)[] = displayImages.map(
-        (item) => item.fileId
-      );
-
-      const type: string = displayImages.length > 0 ? 'image' : 'text';
-      const response = await createPostToFeed(
-        targetType,
-        targetId,
-        {
-          text: inputMessage,
-          fileIds: fileIdArr as string[],
-        },
-        type,
-        mentionUserIds.length > 0 ? mentionUserIds : [],
-        mentionsPosition
-      );
-      if (response) {
-        goBack();
-      }
-    } else {
-      const fileIdArr: (string | undefined)[] = displayVideos.map(
-        (item) => item.fileId
-      );
-
-      const type: string = displayVideos.length > 0 ? 'video' : 'text';
-
-      const response = await createPostToFeed(
-        targetType,
-        targetId,
-        {
-          text: inputMessage,
-          fileIds: fileIdArr as string[],
-        },
-        type,
-        mentionUserIds.length > 0 ? mentionUserIds : [],
-        mentionsPosition
-      );
-      if (targetType !== 'community') return goBack();
-      if (
-        !response ||
-        community?.postSetting !== 'ADMIN_REVIEW_POST_REQUIRED' ||
-        !(community as Record<string, any>).needApprovalOnPostCreation
-      )
-        return goBack();
-      const res = await checkCommunityPermission(
-        community.communityId,
-        client as Amity.Client,
-        apiRegion
-      );
-      if (
-        res.permissions.length > 0 &&
-        res.permissions.includes('Post/ManagePosts')
-      )
-        return goBack();
-      Alert.alert(
+    const files = displayImages?.length > 0 ? displayImages : displayVideos;
+    const fileIds = files.map((item) => item.fileId);
+    const type: string =
+      displayImages?.length > 0
+        ? 'image'
+        : displayVideos?.length > 0
+        ? 'video'
+        : 'text';
+    const response = await createPostToFeed(
+      targetType,
+      targetId,
+      {
+        text: inputMessage,
+        fileIds: fileIds as string[],
+      },
+      type,
+      mentionUserIds.length > 0 ? mentionUserIds : [],
+      mentionsPosition
+    );
+    if (!response) return goBack();
+    if (
+      targetType === 'community' &&
+      (community?.postSetting === 'ADMIN_REVIEW_POST_REQUIRED' ||
+        (community as Record<string, any>)?.needApprovalOnPostCreation) &&
+      !hasCommunityManagepostPermission
+    ) {
+      return Alert.alert(
         'Post submitted',
         'Your post has been submitted to the pending list. It will be reviewed by community moderator',
         [
@@ -156,18 +161,28 @@ const CreatePost = ({ route }: any) => {
         { cancelable: false }
       );
     }
+    const formattedPost = await amityPostsFormatter([response]);
+    dispatch(addPostToFeed(formattedPost[0]));
+    dispatch(addPostToGlobalFeed(formattedPost[0]));
+    goBack();
+    return;
   };
 
-  const pickCamera = async () => {
-    // const permission = await ImagePicker();
+  const onPressCamera = async () => {
+    if (Platform.OS === 'ios') return pickCamera('mixed');
+    Alert.alert('Open Camera', null, [
+      { text: 'Photo', onPress: async () => await pickCamera('photo') },
+      { text: 'Video', onPress: async () => await pickCamera('video') },
+    ]);
+  };
 
+  const pickCamera = async (mediaType: 'mixed' | 'photo' | 'video') => {
     const result: ImagePicker.ImagePickerResponse = await launchCamera({
-      mediaType: 'mixed',
+      mediaType: mediaType,
       quality: 1,
       presentationStyle: 'fullScreen',
       videoQuality: 'high',
     });
-
     if (
       result.assets &&
       result.assets.length > 0 &&
@@ -407,7 +422,7 @@ const CreatePost = ({ route }: any) => {
           scrollEnabled={isScrollEnabled}
           keyboardShouldPersistTaps="handled"
         >
-          <MentionInput
+          <AmityMentionInput
             privateCommunityId={privateCommunityId}
             onFocus={() => {
               setIsScrollEnabled(false);
@@ -465,7 +480,7 @@ const CreatePost = ({ route }: any) => {
         <View style={styles.InputWrap}>
           <TouchableOpacity
             disabled={displayVideos.length > 0 ? true : false}
-            onPress={pickCamera}
+            onPress={onPressCamera}
           >
             <View style={styles.iconWrap}>
               <SvgXml xml={cameraIcon} width="27" height="27" />

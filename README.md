@@ -13,6 +13,13 @@
 
 Our AmityUIKit include user interfaces to enable fast integration of standard Amity Social features into new or existing applications. Furthermore, our React Native UIKit supports integration with **React Native CLI**, providing you with a flexible experience to seamlessly integrate social features into your existing React Native application.
 
+#Minimum Requirements
+
+- node 16
+- JDK 17.0.10
+- ruby 3.2.0
+- XCode 15
+
 ### Try Sample app
 
 This repository also includes a built-in sample app which you can use to test your code while customizing it, or even explore our UIKit features with just a few installations!
@@ -31,17 +38,24 @@ cd example
 yarn
 ```
 
-2. Configure your apiKey,apiRegion,apiEndpoint,userId,displayName in /example/src/App.tsx file(https://github.com/AmityCo/Amity-Social-UIKit-React-Native-CLI-OpenSource/blob/main/example/src/App.tsx) first before run the sample app
-   <img width="1503" alt="Screenshot 2566-09-18 at 00 32 49" src="https://github.com/AmityCo/Amity-Social-UIKit-React-Native-CLI-OpenSource/assets/112688936/2939ed92-3bfd-4a90-b2a7-f5aafccef084">
+2. Sample app is using firebase push notification. you need to setup firebase project by your own firebase project to get credentials.
 
-3. Go back to your root folder (`cd ..`) and Choose to run between iOS or Android
-4. Install modules and sync file
+- Setup firebase project: https://console.firebase.google.com/ for react native android and ios.
+- Download google-services.json and GoogleService-Info.plist.
+- Copy and paste to /example/android/app/google-services.json and /example/ios/GoogleService-Info.plist.
+- More detail about push notification - https://docs.amity.co/amity-uikit/uikit-v4-beta/installation-guide/react-native#push-notification
+
+3. Configure your apiKey,apiRegion,apiEndpoint,userId,displayName,fcmToken in /example/src/App.tsx file(https://github.com/AmityCo/Amity-Social-UIKit-React-Native-CLI-OpenSource/blob/main/example/src/App.tsx) first before run the sample app
+   <img width="658" alt="Screenshot 2567-06-12 at 01 52 46" src="https://github.com/AmityCo/Amity-Social-UIKit-React-Native-CLI-OpenSource/assets/155952277/a312a7db-d790-4af6-9db7-bf085888cd01">
+
+4. Go back to your root folder (`cd ..`) and Choose to run between iOS or Android
+5. Install modules and sync file
 
 ```sh
 yarn
 ```
 
-5. Run sample app
+6. Run sample app
 
 ```sh
 yarn example ios
@@ -70,7 +84,7 @@ Then, inside another project, Copy tgz file to your application folder where you
 
 ```sh
 1. yarn add ./amity-react-native-social-ui-kit-x.x.x.tgz
-2. yarn add react-native-safe-area-context react-native-image-picker @react-native-async-storage/async-storage react-native-svg react-native-gesture-handler react-native-screens react-native-video@6.0.0-beta.6 react-native-create-thumbnail @react-native-community/netinfo @react-navigation/native \@react-navigation/native-stack @react-navigation/stack react-native-vision-camera
+2. yarn add react-native-safe-area-context react-native-image-picker @react-native-async-storage/async-storage react-native-svg react-native-gesture-handler react-native-screens react-native-video@6.0.0-beta.6 react-native-create-thumbnail @react-native-community/netinfo @react-navigation/native \@react-navigation/native-stack @react-navigation/stack react-native-vision-camera react-native-push-notification \@api.video/react-native-livestream react-native-get-random-values react-native-rsa-native react-native-vlc-media-player
 ```
 
 ### iOS Configuration
@@ -80,7 +94,7 @@ In Pod file, add these lines under your target,
 ```
   pod 'SPTPersistentCache', :modular_headers => true
   pod 'DVAssetLoaderDelegate', :modular_headers => true
-  $RNVideoUseVideoCaching = true  
+  $RNVideoUseVideoCaching = true
 ```
 
 <img width="610" alt="Update Pod File" src="https://github.com/AmityCo/Amity-Social-UIKit-React-Native-CLI-OpenSource/assets/155952277/40117769-4dee-4506-8b4c-703769fa7f2a">
@@ -100,9 +114,13 @@ npx pod-install
 
 Build project gradle with your Android Studio
 
-In android/build.gradle,  add kotlinVersion above 1.7.0 in buildscript > ext
+In android/build.gradle, add belows in in buildscript > ext
 
-<img width="545" alt="add kotlinVersion above 1.7.0" src="https://github.com/AmityCo/Amity-Social-UIKit-React-Native-CLI-OpenSource/assets/155952277/1a8618fa-6da3-4a37-8bb8-442119e0b536">
+kotlinVersion = 1.7.0 and above
+compileSdkVersion = 34
+buildToolsVersion = "34.0.0"
+
+<img width="754" alt="Screenshot 2567-06-14 at 19 01 13" src="https://github.com/AmityCo/Amity-Social-UIKit-React-Native-CLI-OpenSource/assets/155952277/82f15d39-8fb0-4b98-b0ec-1dea49a093cf">
 
 ### Add Camera permission (iOS)
 
@@ -113,8 +131,6 @@ Add following permissions to `info.plist` file (ios/{YourAppName}/Info.plist)
  <string>App needs access to the camera to take photos.</string>
  <key>NSMicrophoneUsageDescription</key>
  <string>App needs access to the microphone to record audio.</string>
- <key>NSCameraUsageDescription</key>
- <string>App needs access to the camera to take photos.</string>
  <key>NSPhotoLibraryUsageDescription</key>
  <string>App needs access to the gallery to select photos.</string>
 ```
@@ -122,8 +138,11 @@ Add following permissions to `info.plist` file (ios/{YourAppName}/Info.plist)
 ### Add Camera permission (Android)
 
 Add following permissions to `AndroidManifest.xml` file (android/app/src/main/AndroidManifest.xml)
- <uses-permission android:name="android.permission.CAMERA" /> 
- <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+```
 
 ### Usage
 
@@ -150,6 +169,35 @@ export default function App() {
 }
 ```
 
+### Customization
+
+Our UIKit v4 supports customization in a single place by modifying a `uikit.config.json` file in related UIKit repository. This configuration file includes all necessary data to customize the appearance of each pages, components and elements that we allow to do customization.
+Note: uikit.config.json file should be in your project. Please kindly check in example project.
+
+```js
+import * as React from 'react';
+import {
+  AmityUiKitSocial,
+  AmityUiKitProvider,
+} from 'amity-react-native-social-ui-kit';
+import config from './uikit.config.json';
+
+export default function App() {
+  return (
+    <AmityUiKitProvider
+      configs={config} //put your customized config json object
+      apiKey="API_KEY"
+      apiRegion="API_REGION"
+      userId="userId"
+      displayName="displayName"
+      apiEndpoint="https://api.{API_REGION}.amity.co"
+    >
+      <AmityUiKitSocial />
+    </AmityUiKitProvider>
+  );
+}
+```
+
 ### Using Theme
 
 #### Using the default theme
@@ -158,70 +206,42 @@ AmityUIKit uses the default theme as part of the design language.
 
 #### Theme customization
 
-Without customization, the UIKit already looks good. However, if you wish to customize the theme, you can declare changes to color variables by passing your own color codes to our UIKit. Here is the code usage of how to customize the theme.
+Without customization, the UIKit already looks good. However, if you wish to customize the theme, you can declare changes to color variables by passing your own color codes to our `uikit.config.json`. Here is the code usage of how to customize the theme.
 
-```js
-import * as React from 'react';
-
-import {
-  AmityUiKitSocial,
-  AmityUiKitProvider,
-} from 'amity-react-native-social-ui-kit';
-
-export default function App() {
-  const myTheme = {
-    primary: '#1054DE', // Primary color for main elements
-    secondary: '#636878', // Secondary color UI elements e.g comment bubble, input bar
-    background: '#1E1E1E', // Background color for components
-    border: '#EBECEF', // Border color for elements
-    base: '#FFFFFF', // Base color for main text, Title, input text
-    baseShade1: '#EBECEF', // Base color for Sub Text, Sub Title, TimeStamp Text
-    baseShade2: '#EBECEF', // Base color for comments, like text
-    baseShade3: '#EBECEF', // Base color for placeHolder
-    screenBackground: '#000000', // Background color for screens
-  };
-
-  return (
-    <AmityUiKitProvider
-      apiKey="API_KEY"
-      apiRegion="API_REGION"
-      userId="userId"
-      displayName="displayName"
-      apiEndpoint="https://api.{API_REGION}.amity.co"
-      theme={myTheme}
-    >
-      <AmityUiKitSocial />
-    </AmityUiKitProvider>
-  );
-}
+```json
+"preferred_theme": "default",
+  "theme": {
+    "light": {
+      "primary_color": "#1054DE",
+      "secondary_color": "#292B32",
+      "base_color": "#292b32",
+      "base_shade1_color": "#636878",
+      "base_shade2_color": "#898e9e",
+      "base_shade3_color": "#a5a9b5",
+      "base_shade4_color": "#ebecef",
+      "alert_color": "#FA4D30",
+      "background_color": "#FFFFFF"
+    },
+    "dark": {
+      "primary_color": "#1054DE",
+      "secondary_color": "#292B32",
+      "base_color": "#ebecef",
+      "base_shade1_color": "#a5a9b5",
+      "base_shade2_color": "#6e7487",
+      "base_shade3_color": "#40434e",
+      "base_shade4_color": "#292b32",
+      "alert_color": "#FA4D30",
+      "background_color": "#191919"
+    }
+  },
 ```
 
 #### Dark Mode
 
-The Dark Mode feature in our UIKit enhances user experience by providing an alternative visual style that is particularly beneficial in low-light environments. It's designed to reduce eye strain, improve readability, and offer a more visually comfortable interface. You can enable dark mode by just passing variable `darkMode` to the `AmityUiKitProvider`
+The Dark Mode feature in our UIKit enhances user experience by providing an alternative visual style that is particularly beneficial in low-light environments. It's designed to reduce eye strain, improve readability, and offer a more visually comfortable interface. You can enable dark mode by just changing `preferred_theme: "default"` to the `preferred_theme: "dark"` in `uikit.config.json`
 
 ```js
-import * as React from 'react';
-
-import {
-  AmityUiKitSocial,
-  AmityUiKitProvider,
-} from 'amity-react-native-social-ui-kit';
-
-export default function App() {
-  return (
-    <AmityUiKitProvider
-      apiKey="API_KEY"
-      apiRegion="API_REGION"
-      userId="userId"
-      displayName="displayName"
-      apiEndpoint="https://api.{API_REGION}.amity.co"
-      darkMode
-    >
-      <AmityUiKitSocial />
-    </AmityUiKitProvider>
-  );
-}
+"preferred_theme": "dark" // change it to dark || light || default,
 ```
 
 ```

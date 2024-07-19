@@ -108,7 +108,7 @@ export const useStyles = () => {
       paddingTop: 15,
       alignItems: 'center',
       borderTopWidth: 1,
-      borderTopColor: theme.colors.border,
+      borderTopColor: theme.colors.baseShade4,
     },
     iconWrap: {
       backgroundColor: '#EBECEF',
@@ -126,6 +126,9 @@ export const useStyles = () => {
     },
     disabled: {
       opacity: 0.3,
+    },
+    saveButton: {
+      color: theme.colors.primary,
     },
     videoContainer: {
       display: 'none',

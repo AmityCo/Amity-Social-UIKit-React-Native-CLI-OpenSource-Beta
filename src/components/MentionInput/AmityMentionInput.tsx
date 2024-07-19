@@ -22,7 +22,7 @@ interface IMentionInput extends TextInputProps {
   resetValue?: boolean;
 }
 
-const MentionInput: FC<IMentionInput> = ({
+const AmityMentionInput: FC<IMentionInput> = ({
   initialValue = '',
   setInputMessage,
   mentionsPosition,
@@ -82,7 +82,7 @@ const MentionInput: FC<IMentionInput> = ({
   );
   useEffect(() => {
     if (resetValue) {
-      onChangeInput('');
+      return onChangeInput('');
     }
     onChangeInput(initialValue);
   }, [initialValue, onChangeInput, resetValue]);
@@ -127,6 +127,8 @@ const MentionInput: FC<IMentionInput> = ({
   );
   return (
     <MentionTextInput
+      containerStyle={styles.inputContainer}
+      style={styles.inputText}
       {...rest}
       value={value}
       onChange={onChangeInput}
@@ -143,4 +145,4 @@ const MentionInput: FC<IMentionInput> = ({
   );
 };
 
-export default memo(MentionInput);
+export default memo(AmityMentionInput);
