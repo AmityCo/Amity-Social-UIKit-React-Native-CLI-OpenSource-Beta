@@ -8,13 +8,16 @@ import globalFeedSlice from '../../../../redux/slices/globalfeedSlice';
 import { RootState } from '../../../../redux/store';
 import { useFocusEffect } from '@react-navigation/native';
 import { RefreshControl } from 'react-native';
-import AmityPostContentComponent from '../AmityPostContentComponent/AmityPostContentComponent';
+import AmityPostContentComponent, {
+  IPost,
+} from '../AmityPostContentComponent/AmityPostContentComponent';
 import { ComponentID, PageID } from '../../../enum/enumUIKitID';
 import { useAmityComponent } from '../../../hook/useUiKitReference';
 import { AmityPostContentComponentStyleEnum } from '../../../enum/AmityPostContentComponentStyle';
 import AmityStoryTabComponent from '../AmityStoryTabComponent/AmityStoryTabComponent';
 import { AmityStoryTabComponentEnum } from '../../types';
 import { FeedRepository, PostRepository } from '@amityco/ts-sdk-react-native';
+import { usePostImpression } from '../../../hook/usePostImpression';
 
 type AmityGlobalFeedComponentType = {
   pageId?: PageID;
@@ -28,7 +31,9 @@ const AmityGlobalFeedComponent: FC<AmityGlobalFeedComponentType> = ({
     pageId,
     componentId,
   });
-  const { postList } = useSelector((state: RootState) => state.globalFeed);
+  const { postList } = useSelector(
+    (state: RootState) => state.globalFeed as { postList: IPost[] }
+  );
   const [refreshing, setRefreshing] = useState(false);
   const { updateGlobalFeed, clearFeed } = globalFeedSlice.actions;
   const dispatch = useDispatch();
@@ -108,11 +113,14 @@ const AmityGlobalFeedComponent: FC<AmityGlobalFeedComponentType> = ({
       dispatch(updateGlobalFeed(formattedPostList));
     }
   }, [dispatch, posts, updateGlobalFeed]);
+
   useFocusEffect(
     useCallback(() => {
       posts && getPostList();
     }, [getPostList, posts])
   );
+
+  const { handleViewChange } = usePostImpression(postList);
 
   if (isExcluded) return null;
 
@@ -151,6 +159,9 @@ const AmityGlobalFeedComponent: FC<AmityGlobalFeedComponentType> = ({
           />
         )
       }
+      viewabilityConfig={{ viewAreaCoveragePercentThreshold: 60 }}
+      onViewableItemsChanged={handleViewChange}
+      extraData={postList}
     />
   );
 };
