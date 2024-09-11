@@ -224,10 +224,10 @@ const CommentList = ({
     }
   };
 
-  const deletePostObject = () => {
+  const deleteCommentObject = () => {
     Alert.alert(
-      'Delete this post',
-      `This post will be permanently deleted. You'll no longer see and find this post`,
+      'Delete this comment',
+      `This comment will be permanently deleted. You'll no longer see and find this post`,
       [
         {
           text: 'Cancel',
@@ -452,7 +452,7 @@ const CommentList = ({
                   <Text style={styles.deleteText}> Edit Comment</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={deletePostObject}
+                  onPress={deleteCommentObject}
                   style={styles.modalRow}
                 >
                   <Text style={styles.deleteText}> Delete Comment</Text>
