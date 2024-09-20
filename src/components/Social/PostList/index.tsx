@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+// import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -10,14 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { SvgXml } from 'react-native-svg';
-import {
-  arrowXml,
-  commentXml,
-  likedXml,
-  likeXml,
-  personXml,
-  threeDots,
-} from '../../../svg/svg-xml-list';
+import { personXml, threeDots } from '../../../svg/svg-xml-list';
 import { useStyles } from './styles';
 import type { UserInterface } from '../../../types/user.interface';
 import {
@@ -27,12 +21,11 @@ import {
   reportTargetById,
   unReportTargetById,
 } from '../../../providers/Social/feed-sdk';
+import { getCommunityById } from '../../../providers/Social/communities-sdk';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import useAuth from '../../../hooks/useAuth';
 import EditPostModal from '../../../components/EditPostModal';
-import { useTheme } from 'react-native-paper';
-import type { MyMD3Theme } from '../../../providers/amity-ui-kit-provider';
 import MediaSection from '../../../components/MediaSection';
 import postDetailSlice from '../../../redux/slices/postDetailSlice';
 import { useDispatch } from 'react-redux';
@@ -42,8 +35,11 @@ import feedSlice from '../../../redux/slices/feedSlice';
 import RenderTextWithMention from './Components/RenderTextWithMention';
 import { RootStackParamList } from '../../../routes/RouteParamList';
 import { useTimeDifference } from '../../../hooks/useTimeDifference';
-import { CommunityRepository } from '@amityco/ts-sdk-react-native';
-
+import BackButton from '../../BackButton';
+import { useTheme } from 'react-native-paper';
+import { MyMD3Theme } from '../../../../src/providers/amity-ui-kit-provider';
+// @ts-ignore
+// import { SendIcon } from '../../../svg/SendIcon';
 export interface IPost {
   postId: string;
   data: Record<string, any>;
@@ -68,6 +64,9 @@ export interface IPostList {
   postDetail: IPost;
   postIndex?: number;
   isGlobalfeed?: boolean;
+  showBackBtn?: boolean;
+  chapterName?: string;
+  from?: 'Feed' | 'PostDetail';
 }
 export interface MediaUri {
   uri: string;
@@ -82,15 +81,17 @@ export default function PostList({
   postDetail,
   postIndex,
   onDelete,
-  isGlobalfeed,
+  isGlobalfeed = true,
+  showBackBtn = false,
+  chapterName,
+  from,
 }: IPostList) {
-  const theme = useTheme() as MyMD3Theme;
   const { client, apiRegion } = useAuth();
   const styles = useStyles();
+  const theme = useTheme() as MyMD3Theme;
   const [isLike, setIsLike] = useState<boolean>(false);
   const [likeReaction, setLikeReaction] = useState<number>(0);
-  const [communityName, setCommunityName] = useState('');
-  const [isJoined, setIsJoined] = useState<boolean>(true);
+  const [, setCommunityName] = useState('');
   const [textPost, setTextPost] = useState<string>('');
   const [privateCommunityId, setPrivateCommunityId] = useState(null);
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -102,7 +103,6 @@ export default function PostList({
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
-
   const [mentionPositionArr, setMentionsPositionArr] = useState<
     IMentionPosition[]
   >([]);
@@ -123,14 +123,14 @@ export default function PostList({
     editedAt,
     mentionPosition,
   } = postDetail ?? {};
+  const [childPosts, setChildPosts] = useState(childrenPosts);
   const timeDifference = useTimeDifference(createdAt);
-
+  // const { onMemberClick, showCompleteProfileCard } = useContext(SocialContext);
   useEffect(() => {
     if (mentionPosition) {
       setMentionsPositionArr(mentionPosition);
     }
   }, [mentionPosition]);
-
   useEffect(() => {
     if (myReactions && myReactions?.length > 0) {
       setIsLike(true);
@@ -143,11 +143,9 @@ export default function PostList({
       setLikeReaction(0);
     }
   }, [myReactions, reactionCount]);
-
   const openModal = () => {
     setIsVisible(true);
   };
-
   const closeModal = () => {
     Animated.timing(slideAnimation, {
       toValue: 0,
@@ -155,36 +153,15 @@ export default function PostList({
       useNativeDriver: true,
     }).start(() => setIsVisible(false));
   };
-
   const checkIsReport = useCallback(async () => {
     const isReport = await isReportTarget('post', postId);
     if (isReport) {
       setIsReportByMe(true);
     }
   }, [postId]);
-
   useEffect(() => {
     checkIsReport();
   }, [checkIsReport]);
-
-  useEffect(() => {
-    let unsubCommunity: () => void;
-    if (targetType === 'community' && targetId) {
-      unsubCommunity = CommunityRepository.getCommunity(
-        targetId,
-        ({ error, loading, data }) => {
-          if (error) return;
-          if (!loading) {
-            setCommunityName(data.displayName);
-            setIsJoined(data.isJoined);
-            !data.isPublic && setPrivateCommunityId(data.communityId);
-          }
-        }
-      );
-    }
-    return () => unsubCommunity && unsubCommunity();
-  }, [targetId, targetType]);
-
   useEffect(() => {
     setTextPost(data?.text);
     if (myReactions.length > 0 && myReactions.includes('like')) {
@@ -193,64 +170,83 @@ export default function PostList({
     if (reactionCount?.like) {
       setLikeReaction(reactionCount?.like);
     }
+    if (targetType === 'community' && targetId) {
+      getCommunityInfo(targetId).catch((e) =>
+        console.warn(`Error getting community info for ${targetId}`, e)
+      );
+    }
   }, [data?.text, myReactions, reactionCount?.like, targetId, targetType]);
+  // const renderLikeText = useCallback(
+  //   (likeNumber: number | undefined): string => {
+  //     if (!likeNumber) return '';
+  //     if (likeNumber === 1) return 'like';
+  //     return 'likes';
+  //   },
+  //   []
+  // );
+  // const renderCommentText = useCallback(
+  //   (commentNumber: number | undefined): string => {
+  //     if (!commentNumber) return '';
+  //     if (commentNumber === 1) return 'comment';
+  //     return 'comments';
+  //   },
+  //   []
+  // );
 
-  const renderLikeText = useCallback(
-    (likeNumber: number | undefined): string => {
-      if (!likeNumber) return '';
-      if (likeNumber === 1) return 'like';
-      return 'likes';
-    },
-    []
-  );
-  const renderCommentText = useCallback(
-    (commentNumber: number | undefined): string => {
-      if (!commentNumber) return '';
-      if (commentNumber === 1) return 'comment';
-      return 'comments';
-    },
-    []
-  );
+  useEffect(() => {
+    console.log('childPost for post ', textPost, childPosts);
+  }, [textPost, childPosts]);
 
-  const addReactionToPost = useCallback(
-    async (isLiked) => {
-      setIsLike((prev) => !prev);
-      setLikeReaction((prev) => (isLiked ? prev - 1 : prev + 1));
-      const updatedLikeReaction = isLiked ? likeReaction - 1 : likeReaction + 1;
-      const updatedPost = {
-        ...postDetail,
-        reactionCount: { like: updatedLikeReaction },
-        myReactions: isLiked ? [] : ['like'],
-      };
-
-      try {
-        dispatch(
-          updateByPostIdGlobalFeed({
-            postId: postId,
-            postDetail: updatedPost,
-          })
-        );
-        dispatch(updateByPostId({ postId: postId, postDetail: updatedPost }));
-
-        if (isLiked) {
-          await removePostReaction(postId, 'like');
-        } else {
-          await addPostReaction(postId, 'like');
-        }
-      } catch (error) {
-        setLikeReaction((prev) => prev);
+  const addReactionToPost = useCallback(async () => {
+    const updatedLikeReaction = isLike ? likeReaction - 1 : likeReaction + 1;
+    const updatedPost = {
+      ...postDetail,
+      reactionCount: { like: updatedLikeReaction },
+      myReactions: isLike ? [] : ['like'],
+    };
+    if (isGlobalfeed) {
+      dispatch(
+        updateByPostIdGlobalFeed({ postId: postId, postDetail: updatedPost })
+      );
+    } else {
+      dispatch(updateByPostId({ postId: postId, postDetail: updatedPost }));
+    }
+    if (from && from === 'PostDetail') {
+      //if on postdetail screen, update current post detail in redux
+      dispatch(updatePostDetail(updatedPost));
+    }
+    try {
+      if (isLike) {
+        await removePostReaction(postId, 'like');
+      } else {
+        await addPostReaction(postId, 'like');
       }
-    },
-    [
-      dispatch,
-      likeReaction,
-      postDetail,
-      postId,
-      updateByPostId,
-      updateByPostIdGlobalFeed,
-    ]
-  );
+    } catch (error) {
+    } finally {
+    }
+  }, [
+    from,
+    isGlobalfeed,
+    isLike,
+    likeReaction,
+    postId,
+    postDetail,
+    dispatch,
+    updateByPostIdGlobalFeed,
+    updatePostDetail,
+    updateByPostId,
+  ]);
 
+  const onLikedByPress = () => {
+    // navigation.navigate('ReactionUsersList', { postId: postId });
+  };
+  async function getCommunityInfo(id: string) {
+    const { data: community }: { data: Amity.LiveObject<Amity.Community> } =
+      await getCommunityById(id);
+    setCommunityName(community.data.displayName);
+    !community.data.isPublic &&
+      setPrivateCommunityId(community.data.communityId);
+  }
   function onClickComment() {
     dispatch(
       updatePostDetail({
@@ -266,22 +262,24 @@ export default function PostList({
       isFromGlobalfeed: isGlobalfeed,
     });
   }
+  const onSendPress = () => {
+    if (!postDetail.postId) return;
+    // navigation.navigate('MembersList', { postId: postDetail.postId });
+  };
   const handleDisplayNamePress = () => {
     if (user?.userId) {
-      navigation.navigate('UserProfile', {
-        userId: user.userId,
-      });
+      // @ts-ignore
+      onMemberClick?.(user.userId, user.displayName);
     }
   };
-
-  const handleCommunityNamePress = () => {
-    if (targetType === 'community' && targetId) {
-      navigation.navigate('CommunityHome', {
-        communityId: targetId,
-        communityName: communityName,
-      });
-    }
-  };
+  // const handleCommunityNamePress = () => {
+  //   if (targetType === 'community' && targetId) {
+  //     navigation.navigate('CommunityHome', {
+  //       communityId: targetId,
+  //       communityName: communityName,
+  //     });
+  //   }
+  // };
   const deletePostObject = () => {
     Alert.alert(
       'Delete this post',
@@ -317,7 +315,6 @@ export default function PostList({
       setIsReportByMe(true);
     }
   };
-
   const modalStyle = {
     transform: [
       {
@@ -328,7 +325,6 @@ export default function PostList({
       },
     ],
   };
-
   const renderOptionModal = () => {
     return (
       <Modal
@@ -383,66 +379,74 @@ export default function PostList({
     setIsVisible(false);
     setEditPostModalVisible(true);
   };
-
-  const handleOnFinishEdit = useCallback(
-    (postData: { text: string; mediaUrls: string[] | IVideoPost[] }) => {
-      setTextPost(postData.text);
-      setEditPostModalVisible(false);
-      setIsEdit(true);
-    },
-    []
-  );
-  const onClickReactions = useCallback(() => {
-    navigation.navigate('ReactionList', {
-      referenceId: postId,
-      referenceType: 'post',
-    });
-  }, [navigation, postId]);
-
+  const handleOnFinishEdit = (postData: {
+    text: string;
+    mediaUrls: string[] | IVideoPost[];
+    childPosts: string[];
+  }) => {
+    setTextPost(postData.text);
+    setChildPosts(postData.childPosts);
+    setEditPostModalVisible(false);
+    setIsEdit(true);
+  };
+  // const onClickReactions = useCallback(() => {
+  //   navigation.navigate('ReactionList', {
+  //     referenceId: postId,
+  //     referenceType: 'post',
+  //   });
+  // }, [navigation, postId]);
   return (
-    <View key={postId} style={styles.postWrap}>
+    <View
+      key={postId}
+      style={[styles.postWrap, { marginTop: postIndex === 0 ? 8 : 0 }]}
+    >
       <View style={styles.headerSection}>
-        <View style={styles.user}>
-          {user?.avatarFileId ? (
-            <Image
-              style={styles.avatar}
-              source={{
-                uri: `https://api.${apiRegion}.amity.co/api/v3/files/${user?.avatarFileId}/download`,
+        {showBackBtn ? null : (
+          <View>
+            <BackButton
+              onPress={() => {
+                console.log('back');
               }}
             />
-          ) : (
-            <View style={styles.avatar}>
-              <SvgXml xml={personXml} width="20" height="16" />
-            </View>
-          )}
-
+          </View>
+        )}
+        <View style={styles.user}>
+          <TouchableOpacity
+            // style={styles.displayNameContainer}
+            onPress={handleDisplayNamePress}
+            disabled={false}
+          >
+            {user?.avatarFileId ? (
+              <Image
+                style={styles.avatar}
+                source={{
+                  uri: `https://api.${apiRegion}.amity.co/api/v3/files/${user?.avatarFileId}/download`,
+                }}
+              />
+            ) : (
+              <View style={styles.avatar}>
+                <SvgXml xml={personXml} width="20" height="16" />
+              </View>
+            )}
+          </TouchableOpacity>
           <View style={styles.fillSpace}>
             <View style={styles.headerRow}>
-              <TouchableOpacity onPress={handleDisplayNamePress}>
+              <TouchableOpacity
+                disabled={false}
+                onPress={handleDisplayNamePress}
+              >
                 <Text style={styles.headerText}>{user?.displayName}</Text>
               </TouchableOpacity>
-
-              {communityName && (
-                <View style={styles.communityNameContainer}>
-                  <SvgXml
-                    style={styles.arrow}
-                    xml={arrowXml}
-                    width="8"
-                    height="8"
-                  />
-
-                  <TouchableOpacity onPress={handleCommunityNamePress}>
-                    <Text
-                      ellipsizeMode="tail"
-                      numberOfLines={3}
-                      style={styles.headerText}
-                    >
-                      {communityName}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              )}
             </View>
+            {chapterName && (
+              <Text
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                // style={styles.chapterNameText}
+              >
+                {chapterName}
+              </Text>
+            )}
             <View style={styles.timeRow}>
               <Text style={styles.headerTextTime}>{timeDifference}</Text>
               {(editedAt !== createdAt || isEdit) && (
@@ -454,7 +458,11 @@ export default function PostList({
             </View>
           </View>
         </View>
-        <TouchableOpacity onPress={openModal} style={styles.threeDots}>
+        <TouchableOpacity
+          onPress={openModal}
+          style={styles.threeDots}
+          disabled={false}
+        >
           <SvgXml xml={threeDots(theme.colors.base)} width="20" height="16" />
         </TouchableOpacity>
       </View>
@@ -466,12 +474,11 @@ export default function PostList({
               textPost={textPost}
             />
           )}
-          {childrenPosts?.length > 0 && !editPostModalVisible && (
-            <MediaSection childrenPosts={childrenPosts} />
+          {childPosts?.length > 0 && (
+            <MediaSection childrenPosts={childPosts} />
           )}
         </View>
-
-        {likeReaction === 0 && commentsCount === 0 ? (
+        {/* {likeReaction === 0 && commentsCount === 0 ? (
           ''
         ) : (
           <View>
@@ -491,43 +498,52 @@ export default function PostList({
               )}
             </View>
           </View>
-        )}
-
-        {targetType !== 'community' || isJoined !== false ? (
-          <View style={styles.actionSection}>
-            <TouchableOpacity
-              onPress={() => addReactionToPost(isLike)}
-              style={styles.likeBtn}
-            >
-              {isLike ? (
-                <SvgXml
-                  xml={likedXml(theme.colors.primary)}
-                  width="20"
-                  height="16"
-                />
-              ) : (
-                <SvgXml xml={likeXml} width="20" height="16" />
-              )}
-
-              <Text style={isLike ? styles.likedText : styles.btnText}>
-                Like
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={onClickComment}
-              style={styles.commentBtn}
-            >
-              <SvgXml xml={commentXml} width="20" height="16" />
-              <Text style={styles.btnText}>Comment</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.actionSection}>
-            <Text style={styles.btnText}>
-              Join community to interact with all posts
-            </Text>
-          </View>
-        )}
+        )} */}
+        <View style={styles.actionSection}>
+          <TouchableOpacity
+            onPress={addReactionToPost}
+            style={[
+              styles.likeBtn,
+              // { opacity: showCompleteProfileCard ? 0.4 : 1 },
+            ]}
+            disabled={false}
+          >
+            <Text style={{ color: 'black' }}>Heart</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.likeBtn,
+              // { opacity: showCompleteProfileCard ? 0.4 : 1 },
+            ]}
+            onPress={onLikedByPress}
+            disabled={true}
+          >
+            <Text style={styles.likedText}> {likeReaction} </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={onClickComment}
+            style={[
+              styles.commentBtn,
+              // { opacity: showCompleteProfileCard ? 0.4 : 1 },
+            ]}
+            disabled={false}
+          >
+            <Text style={{ color: 'black' }}>Comment!</Text>
+            <Text style={[styles.btnText]}>{commentsCount}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={
+              [
+                // styles.sendIcon,
+                // { opacity: showCompleteProfileCard ? 0.4 : 1 },
+              ]
+            }
+            onPress={onSendPress}
+            disabled={false}
+          >
+            <Text style={{ color: 'black' }}>Send!</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       {renderOptionModal()}
       {editPostModalVisible && (

@@ -10,13 +10,11 @@ import {
 import { IMentionPosition } from '../../screens/CreatePost';
 import { Alert } from 'react-native';
 import { text_contain_blocked_word } from '../../constants';
-
 export interface IGlobalFeedRes {
   data: Amity.Post<any>[];
   nextPage: Amity.Page<number> | undefined;
   prevPage: Amity.Page<number> | undefined;
 }
-
 interface PostParam {
   targetType: string;
   targetId: string;
@@ -30,7 +28,6 @@ interface PostParam {
   };
   attachments?: { type: Amity.PostContentType; fileId: string }[];
 }
-
 export async function getGlobalFeed(
   page: Amity.Page<number>
 ): Promise<IGlobalFeedRes> {
@@ -49,7 +46,6 @@ export async function getGlobalFeed(
   );
   return feedObject;
 }
-
 export async function addPostReaction(
   postId: string,
   reactionName: string
@@ -130,12 +126,10 @@ export async function createPostToFeed(
         : [],
     metadata: { mentioned: mentionPosition },
   };
-
   if (postType === 'image') {
     const formattedFileIds = content.fileIds.map((id) => {
       return { type: PostContentType.IMAGE, fileId: id };
     });
-
     postParam = {
       ...postParam,
       attachments: formattedFileIds,
@@ -144,7 +138,6 @@ export async function createPostToFeed(
     const formattedFileIds = content.fileIds.map((id) => {
       return { type: PostContentType.VIDEO, fileId: id };
     });
-
     postParam = {
       ...postParam,
       attachments: formattedFileIds,
@@ -165,7 +158,6 @@ export async function createPostToFeed(
   );
   return createPostObject;
 }
-
 export async function editPost(
   postId: string,
   content: { text: string; fileIds: string[] },
@@ -182,7 +174,6 @@ export async function editPost(
         : [],
     metadata: { mentioned: mentionPosition },
   };
-
   if (postType === 'text') {
     postParam = {
       ...postParam,
@@ -195,7 +186,6 @@ export async function editPost(
     const formattedFileIds = content.fileIds.map((id) => {
       return { type: PostContentType.IMAGE, fileId: id };
     });
-
     postParam = {
       ...postParam,
       data: {
@@ -208,7 +198,6 @@ export async function editPost(
     const formattedFileIds = content.fileIds.map((id) => {
       return { type: PostContentType.VIDEO, fileId: id };
     });
-
     postParam = {
       ...postParam,
       data: {
@@ -265,7 +254,7 @@ export async function reportTargetById(
   return isReport;
 }
 export async function isReportTarget(
-  targetType: 'post' | 'comment' | 'user',
+  targetType: 'post' | 'comment',
   targetId: string
 ): Promise<boolean> {
   const isReport: Promise<boolean> = new Promise(async (resolve, reject) => {
@@ -280,7 +269,6 @@ export async function isReportTarget(
   });
   return isReport;
 }
-
 export async function unReportTargetById(
   targetType: 'post' | 'comment',
   targetId: string

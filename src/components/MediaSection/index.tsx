@@ -17,8 +17,6 @@ import ImageView from '../../components/react-native-image-viewing/dist';
 import { RootState } from '../../redux/store';
 import { playBtn } from '../../svg/svg-xml-list';
 import PollSection from '../PollSection/PollSection';
-import LivestreamSection from '../LivestreamSection';
-
 interface IMediaSection {
   childrenPosts: string[];
 }
@@ -27,15 +25,10 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
   const [imagePosts, setImagePosts] = useState<string[]>([]);
   const [videoPosts, setVideoPosts] = useState<IVideoPost[]>([]);
   const [pollIds, setPollIds] = useState<{ pollId: string }[]>([]);
-  const [livestreamId, setLivestreamId] = useState<Amity.Stream['streamId'][]>(
-    []
-  );
-
   const [imagePostsFullSize, setImagePostsFullSize] = useState<MediaUri[]>([]);
   const [videoPostsFullSize, setVideoPostsFullSize] = useState<MediaUri[]>([]);
   const [visibleFullImage, setIsVisibleFullImage] = useState<boolean>(false);
   const [imageIndex, setImageIndex] = useState<number>(0);
-
   const styles = useStyles();
   let imageStyle: StyleProp<ImageStyle> | StyleProp<ImageStyle>[] =
     styles.imageLargePost;
@@ -47,7 +40,6 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
     (state: RootState) => state.globalFeed
   );
   const { postList } = useSelector((state: RootState) => state.feed);
-
   useEffect(() => {
     setImagePostsFullSize([]);
     setVideoPostsFullSize([]);
@@ -68,13 +60,10 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
       setVideoPostsFullSize(updatedUrls);
     }
   }, [imagePosts, videoPosts, apiRegion]);
-
   const getPostInfo = useCallback(async () => {
     const imageChildUrls = [];
     const videoChildUrls = [];
     const pollChildIds = [];
-    const livestreamIds = [];
-
     try {
       const response = await Promise.all(
         childrenPosts.map(async (id) => {
@@ -82,7 +71,6 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
           return { dataType: post.dataType, data: post.data };
         })
       );
-
       response.forEach((item) => {
         if (item.dataType === 'image') {
           const url: string = `https://api.${apiRegion}.amity.co/api/v3/files/${item?.data.fileId}/download?size=medium`;
@@ -91,31 +79,22 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
           videoChildUrls.push(item.data);
         } else if (item.dataType === 'poll') {
           pollChildIds.push(item.data);
-        } else if (item.dataType === 'liveStream') {
-          livestreamIds.push(item.data.streamId);
         }
-
         setImagePosts([...imageChildUrls]);
         setVideoPosts([...videoChildUrls]);
         setPollIds([...pollChildIds]);
-        setLivestreamId([...livestreamIds]);
       });
     } catch (error) {
       console.log('error: ', error);
     }
   }, [apiRegion, childrenPosts]);
-
   useEffect(() => {
-    setVideoPosts([]);
-    setImagePosts([]);
     getPostInfo();
   }, [childrenPosts, currentPostdetail, postList, postListGlobal, getPostInfo]);
-
   function onClickImage(index: number): void {
     setIsVisibleFullImage(true);
     setImageIndex(index);
   }
-
   function renderMediaPosts() {
     const thumbnailFileIds: string[] =
       videoPosts.length > 0
@@ -158,7 +137,6 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
               styles.imageMarginLeft,
             ];
             break;
-
           default:
             break;
         }
@@ -200,7 +178,6 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
             break;
         }
       }
-
       return (
         <View style={colStyle} key={item}>
           <TouchableWithoutFeedback onPress={() => onClickImage(index)}>
@@ -253,7 +230,6 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
       );
     }
   }
-
   function renderPlayButton() {
     return (
       <View style={styles.playButton}>
@@ -261,17 +237,13 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
       </View>
     );
   }
-
   return (
     <View>
       {pollIds.length > 0 ? (
         <PollSection pollId={pollIds[0].pollId} />
-      ) : livestreamId.length > 0 ? (
-        <LivestreamSection streamId={livestreamId[0]} />
       ) : (
         renderMediaPosts()
       )}
-
       <ImageView
         images={
           imagePostsFullSize.length > 0
@@ -287,5 +259,4 @@ const MediaSection: React.FC<IMediaSection> = ({ childrenPosts }) => {
     </View>
   );
 };
-
 export default React.memo(MediaSection);
