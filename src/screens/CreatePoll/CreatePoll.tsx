@@ -75,64 +75,77 @@ const CreatePoll = ({ navigation, route }) => {
 
   const handleCreatePost = useCallback(async () => {
     setLoading(true);
-    const {
-      data: { pollId },
-    } = await PollRepository.createPoll({
-      question: optionQuestion,
-      answerType: answerType,
-      answers: pollOptions,
-      closedIn: closedIn,
-    });
-    if (!pollId) return;
-    const mentionees = [
-      {
-        type: 'user',
-        userIds: mentionUsers.map((user) => user.id),
-      },
-    ];
     try {
-      const response = await PostRepository.createPost({
-        dataType: 'poll',
-        targetType,
-        targetId,
-        data: { pollId, text: optionQuestion },
-        mentionees,
-        metadata: { mentioned: mentionPosition },
+      const {
+        data: { pollId },
+      } = await PollRepository.createPoll({
+        question: optionQuestion,
+        answerType: answerType,
+        answers: pollOptions,
+        closedIn: closedIn,
       });
-      setLoading(false);
-      if (targetType !== 'community') return goBack();
-      if (
-        !response ||
-        postSetting !== 'ADMIN_REVIEW_POST_REQUIRED' ||
-        !needApprovalOnPostCreation
-      )
-        return goBack();
-      const res = await checkCommunityPermission(
-        targetId,
-        client as Amity.Client,
-        apiRegion
-      );
-      if (
-        res.permissions.length > 0 &&
-        res.permissions.includes('Post/ManagePosts')
-      )
-        return goBack();
-      Alert.alert(
-        'Post submitted',
-        'Your post has been submitted to the pending list. It will be reviewed by community moderator',
-        [
-          {
-            text: 'OK',
-            onPress: () => goBack(),
-          },
-        ],
-        { cancelable: false }
-      );
+
+      if (!pollId) return;
+      const mentionees = [
+        {
+          type: 'user',
+          userIds: mentionUsers.map((user) => user.id),
+        },
+      ];
+      try {
+        const response = await PostRepository.createPost({
+          dataType: 'poll',
+          targetType,
+          targetId,
+          data: { pollId, text: optionQuestion },
+          mentionees,
+          metadata: { mentioned: mentionPosition },
+        });
+        setLoading(false);
+        if (targetType !== 'community') return goBack();
+        if (
+          !response ||
+          postSetting !== 'ADMIN_REVIEW_POST_REQUIRED' ||
+          !needApprovalOnPostCreation
+        )
+          return goBack();
+        const res = await checkCommunityPermission(
+          targetId,
+          client as Amity.Client,
+          apiRegion
+        );
+        if (
+          res.permissions.length > 0 &&
+          res.permissions.includes('Post/ManagePosts')
+        )
+          return goBack();
+        Alert.alert(
+          'Post submitted',
+          'Your post has been submitted to the pending list. It will be reviewed by community moderator',
+          [
+            {
+              text: 'OK',
+              onPress: () => goBack(),
+            },
+          ],
+          { cancelable: false }
+        );
+      } catch (error) {
+        if (error.message.includes(text_contain_blocked_word)) {
+          Alert.alert('', text_contain_blocked_word);
+          setLoading(false);
+        }
+      }
     } catch (error) {
       if (error.message.includes(text_contain_blocked_word)) {
         Alert.alert('', text_contain_blocked_word);
+        setLoading(false);
       }
+
     }
+
+
+
   }, [
     answerType,
     apiRegion,
